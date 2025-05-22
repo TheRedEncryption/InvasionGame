@@ -22,6 +22,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float maximumHeight = 100; // either by an algorithm per the map generation, or
     [SerializeField] private float currentHeight = 5;  // through some other heuristic
 
+    // TODO: implement boundaries
+
     public float zoomSpeed = 10;
     public float planeMoveSpeed = 10;
 
@@ -88,12 +90,14 @@ public class CameraController : MonoBehaviour
         // NOTE: This method is for changing the camera's settings to the FPS upon state change.
         // All input handling concerning the control of the camera MUST be handled in HandleFirstPerson()
         Debug.Log("[CameraController]: Switched to FPS view!");
+
+        // TODO: implement body
     }
 
 
     private void HandleFirstPerson()
     {
-        //
+        // TODO: implement body
     }
 
     // CAMERA TARGET
