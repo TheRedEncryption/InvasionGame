@@ -1,0 +1,24 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class #SCRIPTNAME# : Behavior
+{
+    // Called before first occurance of FlexMuscle
+    public override void EnterState(AIBrain brain) 
+    {
+    #NOTRIM#
+    }
+
+    // Called every frame
+    public override void FlexMuscle(AIBrain brain)
+    {
+    #NOTRIM#
+    }
+
+    // Called when this behavior is no longer in use
+    public override void LeaveState(AIBrain brain)
+    {
+    #NOTRIM#
+    }
+}
