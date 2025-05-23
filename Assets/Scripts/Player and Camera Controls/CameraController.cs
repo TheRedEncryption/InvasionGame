@@ -22,13 +22,20 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float maximumHeight = 100; // either by an algorithm per the map generation, or
     [SerializeField] private float currentHeight = 5;  // through some other heuristic
 
-    // TODO: implement boundaries
-
     public float zoomSpeed = 10;
     public float planeMoveSpeed = 10;
 
-    [Header("First-Person View Controls")]
-    [SerializeField] private float sensitivity; // (or whatever list of parameters works)
+    [Header("FPS View Controls")]
+    [SerializeField] private GameObject _cameraOrientation;
+    [SerializeField] private Transform _playerOrientation;
+    [SerializeField] private Vector2 sensitivity;
+    [SerializeField] private Vector2 acceleration;
+    [SerializeField] private float inputLagPeriod;
+    private Vector2 rotation;
+    private float inputLagTimer;
+    private Vector2 lastInputEvent;
+
+    // TODO: implement boundaries
 
     void Start()
     {
@@ -63,12 +70,16 @@ public class CameraController : MonoBehaviour
     }
 
     // TOP-DOWN/BIRDS
+    
 
     private void SwitchToTopDown()
     {
         Debug.Log("[CameraController]: Switched to top-down view!");
         transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
         transform.rotation = Quaternion.Euler(new Vector3(90f, 0f, 0f)); // look down
+
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
     }
 
     private void HandleTopDown()
@@ -92,12 +103,41 @@ public class CameraController : MonoBehaviour
         Debug.Log("[CameraController]: Switched to FPS view!");
 
         // TODO: implement body
+        cam.transform.parent = _cameraOrientation.transform;
+        cam.transform.position = _cameraOrientation.transform.position;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
 
     private void HandleFirstPerson()
     {
         // TODO: implement body
+        // get mouse input
+        Vector2 mouseDelta = GetInput() * sensitivity;
+
+        rotation += mouseDelta * Time.deltaTime;
+
+        rotation.y = Mathf.Clamp(rotation.y, -90f, 90f);
+
+        // rotate cam and orientation
+        cam.transform.rotation = Quaternion.Euler(rotation.y, rotation.x, 0);
+        _playerOrientation.transform.rotation = Quaternion.Euler(0, rotation.x, 0);
+    }
+
+    private Vector2 GetInput()
+    {
+        inputLagTimer += Time.deltaTime;
+        Vector2 input = PlayerInputHandler.Instance.LookInput;
+
+        if((Mathf.Approximately(0, input.x) && Mathf.Approximately(0, input.y)) == false || inputLagTimer >= inputLagPeriod)
+        {
+            lastInputEvent = input;
+            inputLagTimer = 0;
+        }
+
+        return lastInputEvent;
     }
 
     // CAMERA TARGET
