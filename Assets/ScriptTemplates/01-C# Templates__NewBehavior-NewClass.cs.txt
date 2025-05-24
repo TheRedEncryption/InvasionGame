@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class #SCRIPTNAME# : Behavior
 {
-    // Called before first occurance of FlexMuscle
-    public override void EnterState(AIBrain brain) 
+    // Called before first occurance of FlexMuscle.
+    public override void Enter(StateMachine brain) 
     {
     #NOTRIM#
     }
 
-    // Called every frame
-    public override void FlexMuscle(AIBrain brain)
+    // Called once every frame.
+    public override void Flex(StateMachine brain)
     {
     #NOTRIM#
     }
 
-    // Called when this behavior is no longer in use
-    public override void LeaveState(AIBrain brain)
+    // Called when the brain switches off of this behavior.
+    public override void Leave(StateMachine brain)
     {
     #NOTRIM#
     }
