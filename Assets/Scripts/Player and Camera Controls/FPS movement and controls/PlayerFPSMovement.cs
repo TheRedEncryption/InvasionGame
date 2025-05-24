@@ -114,6 +114,10 @@ public class PlayerFPSMovement : MonoBehaviour
                 MovePlayerGround(moveDirection);
                 break;
 
+            case PlayerMoveState.slow:
+                MovePlayerSlow(moveDirection);
+                break;
+
             case PlayerMoveState.air:
                 MovePlayerAir(moveDirection);
                 break;
@@ -151,6 +155,13 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             MoveState = PlayerMoveState.air;
         }
+        // ------------------------------------------------------------------------------------------------------------------------
+        // Jamieson add Condional here!
+        // ------------------------------------------------------------------------------------------------------------------------
+        else if (false)
+        {
+            MoveState = PlayerMoveState.slow;
+        }
         else
         {
             MoveState = PlayerMoveState.walking;
@@ -160,6 +171,7 @@ public class PlayerFPSMovement : MonoBehaviour
     }
 
     #region WASD movement
+
     private void MovePlayerGround(Vector3 moveDirection)
     {
         // First two check for ground conditions
@@ -182,6 +194,13 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             Debug.LogWarning("Invalid grounded slope angle.");
         }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------
+    // Jamieson Add slow movement logic here!
+    // ------------------------------------------------------------------------------------------------------------------------
+    private void MovePlayerSlow(Vector3 moveDirection)
+    {
 
     }
 
@@ -287,6 +306,10 @@ public class PlayerFPSMovement : MonoBehaviour
 
     #region Slope Handling
 
+    /// <summary>
+    /// Returns the current slopeState
+    /// </summary>
+    /// <returns></returns>
     public SlopeState OnSlope()
     {
         if (!Grounded) return SlopeState.none;
@@ -312,6 +335,10 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Projects a direction onto a plane; normalized.
+    /// </summary>
+    /// <param name="direction"></param>
     public Vector3 GetSlopeMoveDirection(Vector3 direction) => Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
 
     #endregion

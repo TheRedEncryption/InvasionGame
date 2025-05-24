@@ -54927,7 +54927,7 @@ MonoBehaviour:
   - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
   - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
   - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  _maxScale: {x: 0.05, y: 1.5}
+  _maxScale: {x: 0.01, y: 0.1}
   _scaleCurve:
     serializedVersion: 2
     m_Curve:
@@ -54961,10 +54961,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _maxPositionSpawn: {x: 10, y: 10, z: 10}
-  _maxVelocity: 20
-  _maxProps: 5000
-  _spawnPerFram: 10
+  _maxPositionSpawn: {x: 0, y: 100, z: 0}
+  _maxVelocity: 0
+  _maxProps: 3000
+  _spawnPerFram: 50
   _basePlate: {fileID: 738519777}
 --- !u!43 &1792143272
 Mesh:
