@@ -89,7 +89,6 @@ public class DemoPropSpammer : MonoBehaviour
         newScale = Mathf.Clamp(_scaleCurve.Evaluate(newScale), 0, 1);      // Clamp and adjust according to user weight selection.
         newScale = newScale * (_maxScale.y - _maxScale.x) + _maxScale.x;   // Scale according to user inputs.
         
-
         Vector3 propScale = new(newScale, newScale, newScale);
 
         // Make the new prop
