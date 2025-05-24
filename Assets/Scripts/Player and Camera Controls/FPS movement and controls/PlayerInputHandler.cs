@@ -19,7 +19,8 @@ public class PlayerInputHandler : MonoBehaviour
         "Attack",
         "Interact",
         "Pause",
-        "Jump"
+        "Jump",
+        "Crouch"
     };
 
     // --- Input references ---
@@ -28,10 +29,12 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 LookInput { get; private set; }
     public bool AttackDown { get; private set; }
     public bool JumpDown { get; private set; }
+    public bool CrouchDown { get; private set; }
 
     // Logical data from input detection
     public bool AttackTriggered => actions["Attack"].triggered;
     public bool JumpTriggered => actions["Jump"].triggered;
+    public bool CrouchTriggered => actions["Crouch"].triggered;
     public bool PauseTriggered => actions["Pause"].triggered;
     public bool InteractTriggered => actions["Interact"].triggered;
 
@@ -80,6 +83,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         actions["Jump"].performed += context => JumpDown = true;
         actions["Jump"].canceled += context => JumpDown = false;
+        
+        actions["Crouch"].performed += context => CrouchDown = true;
+        actions["Crouch"].canceled += context => CrouchDown = false;
     }
 
     private void OnEnable()
