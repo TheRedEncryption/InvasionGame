@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerFPSMovement : MonoBehaviour
 {
@@ -13,6 +14,19 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _walkSpeed;
     public float _jumpSpeed;
     public float _moveSpeedError;
+
+    public float crouchOffset;
+    public float cameraMoveSpeed;
+
+    public float _slideSpeed;
+    public float _defaultSlideTime;
+    private float slideTime = 5f;
+    private bool isSliding;
+    private float _lastY;
+    private int deltaYDirection; // -1, 0, 1 (Down, Neutral, Up)
+
+    public Transform cameraPositionOnPlayer;
+    private Vector3 camStartLocalPos;
 
     private float MoveSpeed
     {
@@ -82,10 +96,16 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
-    }
+        camStartLocalPos = cameraPositionOnPlayer.localPosition;
+        _lastY = transform.position.y;
+        deltaYDirection = 0;
+}
 
     void Update()
     {
+        deltaYDirection = _lastY < transform.position.y ? 1 : (_lastY > transform.position.y ? -1 : 0);
+        _lastY = transform.position.y;
+
         if (PlayerInputHandler.Instance.JumpDown)
         {
             JumpHandler();
@@ -107,6 +127,9 @@ public class PlayerFPSMovement : MonoBehaviour
         _rb.useGravity = !OnLevelGround;
         StateHandler();
 
+        Vector3 planarVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+        Debug.Log(planarVel.magnitude);
+        CrouchHandle();
 
         // calculate movement direction
         Vector3 moveDirection = InputDir;
@@ -209,6 +232,22 @@ public class PlayerFPSMovement : MonoBehaviour
     // ------------------------------------------------------------------------------------------------------------------------
     private void MovePlayerSlow(Vector3 moveDirection)
     {
+        // Enter sliding
+        Vector3 planarVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+        if (!isSliding && (planarVel.magnitude) > 6f)
+        {
+            isSliding = true;
+            slideTime = _defaultSlideTime;
+        }
+
+        if (isSliding)
+        {
+            slideTime -= Time.deltaTime + deltaYDirection * 0.01f;
+            if (slideTime <= 0f) isSliding = false;
+            _rb.AddForce(moveDirection * (_slideSpeed) * slideTime/_defaultSlideTime, ForceMode.Impulse);
+            return;
+        }
+
         // First two check for ground conditions
         // Last two check for air conditions
         if (OnLevelGround) // If on a small slope
@@ -328,6 +367,32 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         _cyotyeTimeCurr = 0;
         _readyToJump = true;
+    }
+    #endregion
+
+    #region
+    private void CrouchHandle()
+    {
+        if (!PlayerInputHandler.Instance.CrouchDown)
+        {
+            isSliding = false;
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                camStartLocalPos,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
+        else
+        {
+            // decide target local position
+            Vector3 target = camStartLocalPos + Vector3.down * crouchOffset;
+            // smoothly move towards it
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                target,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
     }
     #endregion
 
