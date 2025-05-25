@@ -14,6 +14,12 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _jumpSpeed;
     public float _moveSpeedError;
 
+    public Transform cameraPositionOnPlayer;
+    private Vector3 camStartLocalPos;
+    public float cameraMoveSpeed;
+    public float crouchOffset;
+
+
     private float MoveSpeed
     {
         get => MoveState switch
@@ -82,6 +88,7 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
+        camStartLocalPos = cameraPositionOnPlayer.localPosition;
     }
 
     void Update()
@@ -107,6 +114,7 @@ public class PlayerFPSMovement : MonoBehaviour
         _rb.useGravity = !OnLevelGround;
         StateHandler();
 
+        CrouchHandle();
 
         // calculate movement direction
         Vector3 moveDirection = InputDir;
@@ -330,7 +338,30 @@ public class PlayerFPSMovement : MonoBehaviour
         _readyToJump = true;
     }
     #endregion
-
+    #region
+    private void CrouchHandle()
+    {
+        if (!PlayerInputHandler.Instance.CrouchDown)
+        {
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                camStartLocalPos,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
+        else
+        {
+            // decide target local position
+            Vector3 target = camStartLocalPos + Vector3.down * crouchOffset;
+            // smoothly move towards it
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                target,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
+    }
+    #endregion
     #region Slope Handling
 
     /// <summary>
