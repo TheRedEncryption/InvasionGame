@@ -58821,7 +58821,13 @@ MonoBehaviour:
   _slowSpeed: 2
   _walkSpeed: 10
   _jumpSpeed: 6
+  _slowSpeed: 2
+  _walkSpeed: 10
+  _jumpSpeed: 6
   _moveSpeedError: 5
+  cameraPositionOnPlayer: {fileID: 356242220}
+  cameraMoveSpeed: 20
+  crouchOffset: 0.5
   crouchOffset: 0.5
   cameraMoveSpeed: 20
   _slideSpeed: 7
@@ -58830,9 +58836,10 @@ MonoBehaviour:
   _groundDrag: 5
   _airDrag: 0
   _slowDrag: 15
-  _cyotyeTime: 0.3
+  _coyotyeTime: 0
   _jumpCooldown: 0.25
   _slopeExchangeAngle: 45
+  _scanHeight: -0.35
   _scanHeight: -0.45
   _orientation: {fileID: 612934366}
 --- !u!136 &1942809327

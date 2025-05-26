@@ -59,8 +59,8 @@ public class PlayerFPSMovement : MonoBehaviour
     // -- Up down movement
     // *******************
     [Header("Jumping")]
-    public float _cyotyeTime;
-    float _cyotyeTimeCurr;
+    public float _coyotyeTime;
+    float _coyotyeTimeCurr;
 
     public float _jumpCooldown;
     bool _readyToJump = true;
@@ -166,13 +166,13 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         if (Grounded)
         {
-            _cyotyeTimeCurr = _cyotyeTime;
+            _coyotyeTimeCurr = _coyotyeTime;
 
             LastGroundedPosition = transform.position;
         }
         else
         {
-            _cyotyeTimeCurr -= Time.deltaTime;
+            _coyotyeTimeCurr -= Time.deltaTime;
         }
     }
 
@@ -184,9 +184,6 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             MoveState = PlayerMoveState.air;
         }
-        // ------------------------------------------------------------------------------------------------------------------------
-        // Jamieson add Condional here!
-        // ------------------------------------------------------------------------------------------------------------------------
         else if (PlayerInputHandler.Instance.CrouchDown)
         {
             MoveState = PlayerMoveState.slow;
@@ -225,9 +222,6 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
-    // ------------------------------------------------------------------------------------------------------------------------
-    // Jamieson Add slow movement logic here!
-    // ------------------------------------------------------------------------------------------------------------------------
     private void MovePlayerSlow(Vector3 moveDirection)
     {
         // Enter sliding
@@ -309,8 +303,9 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void TryMoveXY(Vector3 amount)
     {
-        Vector3 preVelocityX = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+        Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
         Vector3 amountVelX = new(amount.x, 0, amount.z);
+        Vector3 amountOrigY = new Vector3(0, amount.y, 0);
 
         if ((preVelocityX + amountVelX).magnitude > MoveSpeed)
         {
@@ -318,7 +313,7 @@ public class PlayerFPSMovement : MonoBehaviour
             amount = goalX - preVelocityX;
         }
 
-        _rb.AddForce(amount, ForceMode.VelocityChange);
+        _rb.AddForce(amount+ amountOrigY, ForceMode.VelocityChange);
     }
 
     private Vector3 NormalizeToMoveSpeed(Vector3 amount, float speed) => amount.normalized * Mathf.Max(MoveSpeed, speed);
@@ -331,7 +326,7 @@ public class PlayerFPSMovement : MonoBehaviour
     #region Jumping
     private void JumpHandler()
     {
-        if (_readyToJump && _cyotyeTimeCurr > 0)
+        if (_readyToJump && _coyotyeTimeCurr > 0)
         {
             _readyToJump = false;
 
@@ -343,9 +338,9 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (_cyotyeTimeCurr > 0)
+        if (_coyotyeTimeCurr > 0)
         {
-            _cyotyeTimeCurr = 0;
+            _coyotyeTimeCurr = 0;
         }
 
         // reset y velocity
@@ -363,7 +358,7 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void ResetJump()
     {
-        _cyotyeTimeCurr = 0;
+        _coyotyeTimeCurr = 0;
         _readyToJump = true;
     }
     #endregion
