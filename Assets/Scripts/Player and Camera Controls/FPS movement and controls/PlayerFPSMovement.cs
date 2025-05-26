@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerFPSMovement : MonoBehaviour
 {
@@ -12,6 +13,12 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _walkSpeed;
     public float _jumpSpeed;
     public float _moveSpeedError;
+
+    public Transform cameraPositionOnPlayer;
+    private Vector3 camStartLocalPos;
+    public float cameraMoveSpeed;
+    public float crouchOffset;
+
 
     private float MoveSpeed
     {
@@ -81,6 +88,7 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
+        camStartLocalPos = cameraPositionOnPlayer.localPosition;
     }
 
     void Update()
@@ -93,19 +101,27 @@ public class PlayerFPSMovement : MonoBehaviour
         GroundActions();
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, 0.4f);
+        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), 0.4f);
+    }
+
     private void FixedUpdate()
     {
-        Grounded = Physics.SphereCast(transform.position, 0.5f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
-
+        Grounded = Physics.SphereCast(transform.position, 0.4f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
         _rb.useGravity = !OnLevelGround;
         StateHandler();
+
+        CrouchHandle();
 
         // calculate movement direction
         Vector3 moveDirection = InputDir;
 
         if (moveDirection.magnitude == 0)
             return;
+
 
         // Execute movement based on movestate
         switch (MoveState)
@@ -158,7 +174,7 @@ public class PlayerFPSMovement : MonoBehaviour
         // ------------------------------------------------------------------------------------------------------------------------
         // Jamieson add Condional here!
         // ------------------------------------------------------------------------------------------------------------------------
-        else if (false)
+        else if (PlayerInputHandler.Instance.CrouchDown)
         {
             MoveState = PlayerMoveState.slow;
         }
@@ -201,7 +217,26 @@ public class PlayerFPSMovement : MonoBehaviour
     // ------------------------------------------------------------------------------------------------------------------------
     private void MovePlayerSlow(Vector3 moveDirection)
     {
+        // First two check for ground conditions
+        // Last two check for air conditions
+        if (OnLevelGround) // If on a small slope
+        {
+            TryMoveXY(MoveSpeed * GetSlopeMoveDirection(moveDirection));
+        }
+        else if (OnSteepGround) // If on a big slope
+        {
+            Vector3 slopePlanarDir = PlanarVector(_slopeHit.normal);
+            Vector3 projectedMovement = PlanarVector(moveDirection);
 
+            if (Vector3.Dot(slopePlanarDir, projectedMovement) > 0)
+            {
+                TryMoveXY(MoveSpeed * projectedMovement);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Invalid grounded slope angle.");
+        }
     }
 
     private void MovePlayerAir(Vector3 moveDirection)
@@ -303,7 +338,30 @@ public class PlayerFPSMovement : MonoBehaviour
         _readyToJump = true;
     }
     #endregion
-
+    #region
+    private void CrouchHandle()
+    {
+        if (!PlayerInputHandler.Instance.CrouchDown)
+        {
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                camStartLocalPos,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
+        else
+        {
+            // decide target local position
+            Vector3 target = camStartLocalPos + Vector3.down * crouchOffset;
+            // smoothly move towards it
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                target,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
+    }
+    #endregion
     #region Slope Handling
 
     /// <summary>
