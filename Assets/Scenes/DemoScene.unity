@@ -54910,23 +54910,6 @@ MonoBehaviour:
   - {fileID: 1482401364953134854, guid: 38dc54857aac41d4aba1b29980b9685f, type: 3}
   - {fileID: 45394407644418846, guid: bfa7a81b8cec0584cb4bff1245a08e88, type: 3}
   - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
   _maxScale: {x: 0.01, y: 0.1}
   _scaleCurve:
     serializedVersion: 2
@@ -58317,13 +58300,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slowSpeed: 2
-  _walkSpeed: 4
-  _jumpSpeed: 5
+  _walkSpeed: 10
+  _jumpSpeed: 6
   _moveSpeedError: 5
   _groundDrag: 5
   _airDrag: 0
   _slowDrag: 15
-  _cyotyeTime: 0.3
+  _coyotyeTime: 0
   _jumpCooldown: 0.25
   _slopeExchangeAngle: 45
   _scanHeight: -0.5
