@@ -274,8 +274,9 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void TryMoveXY(Vector3 amount)
     {
-        Vector3 preVelocityX = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+        Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
         Vector3 amountVelX = new(amount.x, 0, amount.z);
+        Vector3 amountOrigY = new Vector3(0, amount.y, 0);
 
         if ((preVelocityX + amountVelX).magnitude > MoveSpeed)
         {
@@ -283,7 +284,7 @@ public class PlayerFPSMovement : MonoBehaviour
             amount = goalX - preVelocityX;
         }
 
-        _rb.AddForce(amount, ForceMode.VelocityChange);
+        _rb.AddForce(amount+ amountOrigY, ForceMode.VelocityChange);
     }
 
     private Vector3 NormalizeToMoveSpeed(Vector3 amount, float speed) => amount.normalized * Mathf.Max(MoveSpeed, speed);
