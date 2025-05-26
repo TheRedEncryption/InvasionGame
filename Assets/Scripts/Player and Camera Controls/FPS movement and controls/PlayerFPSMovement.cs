@@ -103,13 +103,13 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, 0.4f);
-        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), 0.4f);
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
+        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), 0.5f);
     }
 
     private void FixedUpdate()
     {
-        Grounded = Physics.SphereCast(transform.position, 0.4f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
+        Grounded = Physics.SphereCast(transform.position, 0.5f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
         _rb.useGravity = !OnLevelGround;
         StateHandler();
@@ -171,9 +171,6 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             MoveState = PlayerMoveState.air;
         }
-        // ------------------------------------------------------------------------------------------------------------------------
-        // Jamieson add Condional here!
-        // ------------------------------------------------------------------------------------------------------------------------
         else if (PlayerInputHandler.Instance.CrouchDown)
         {
             MoveState = PlayerMoveState.slow;
@@ -212,9 +209,6 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
-    // ------------------------------------------------------------------------------------------------------------------------
-    // Jamieson Add slow movement logic here!
-    // ------------------------------------------------------------------------------------------------------------------------
     private void MovePlayerSlow(Vector3 moveDirection)
     {
         // First two check for ground conditions
