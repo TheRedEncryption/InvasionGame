@@ -12980,12 +12980,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTarget: {fileID: 0}
-  currentCameraState: 1
+  currentCameraState: 0
   minimumHeight: 1
   maximumHeight: 100
   currentHeight: 5
+  boundary:
+    minX: -50
+    minZ: -50
+    maxX: 50
+    maxZ: 50
   zoomSpeed: 10
-  planeMoveSpeed: 10
+  planeMoveBaseSpeed: 4
   _cameraOrientation: {fileID: 1631384892}
   _playerOrientation: {fileID: 612934366}
   sensitivity: {x: 20, y: -20}
@@ -58828,7 +58833,7 @@ MonoBehaviour:
   _groundDrag: 5
   _airDrag: 0
   _slowDrag: 15
-  _coyotyeTime: 0
+  _coyotyeTime: 0.1
   _jumpCooldown: 0.25
   _slopeExchangeAngle: 45
   _scanHeight: -0.35
