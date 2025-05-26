@@ -48,6 +48,19 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+
+        if (PlayerInputHandler.Instance.CamSwitchTriggered)
+        {
+            if (currentCameraState == CameraState.TopDown)
+            {
+                SwitchCameraState(CameraState.FirstPerson);
+            }
+            else if (currentCameraState == CameraState.FirstPerson)
+            {
+                SwitchCameraState(CameraState.TopDown);
+            }
+        }
+
         if (currentCameraState == CameraState.TopDown)
         {
             HandleTopDown();
