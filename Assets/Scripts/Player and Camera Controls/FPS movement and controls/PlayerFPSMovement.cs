@@ -116,19 +116,17 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, 0.4f);
-        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), 0.4f);
+        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), 0.48f);
     }
 
     private void FixedUpdate()
     {
-        Grounded = Physics.SphereCast(transform.position, 0.4f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
+        Grounded = Physics.SphereCast(transform.position, 0.48f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
         _rb.useGravity = !OnLevelGround;
         StateHandler();
 
-        Vector3 planarVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
-        Debug.Log(planarVel.magnitude);
+
         CrouchHandle();
 
         // calculate movement direction
@@ -233,7 +231,7 @@ public class PlayerFPSMovement : MonoBehaviour
     private void MovePlayerSlow(Vector3 moveDirection)
     {
         // Enter sliding
-        Vector3 planarVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+        Vector3 planarVel = PlanarVector(_rb.linearVelocity);
         if (!isSliding && (planarVel.magnitude) > 6f)
         {
             isSliding = true;
@@ -355,7 +353,7 @@ public class PlayerFPSMovement : MonoBehaviour
 
         if (OnSteepGround)
         {
-            _rb.AddForce(_slopeHit.normal * _jumpSpeed, ForceMode.VelocityChange);
+            //_rb.AddForce(_slopeHit.normal * _jumpSpeed, ForceMode.VelocityChange);
         }
         else
         {
