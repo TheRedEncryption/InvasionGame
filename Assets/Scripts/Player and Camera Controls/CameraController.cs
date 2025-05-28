@@ -1,4 +1,5 @@
 using System;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,9 +25,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float maximumHeight = 100; // either by an algorithm per the map generation, or
     [SerializeField] private float currentHeight = 5;  // through some other heuristic
     [SerializeField] private Bounds2D boundary;
+    [SerializeField][UnityEngine.Range(0.01f, 1f)] private float _scaleSpeed = 0.5f;
 
     public float zoomSpeed = 10;
     public float planeMoveBaseSpeed = 10;
+
+    private float _desiredHeight;
 
     [Header("FPS View Controls")]
     [SerializeField] private GameObject _cameraOrientation;
@@ -85,15 +89,28 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    // TOP-DOWN/BIRDS
+    #region  TOP-DOWN
 
+    private void LerpBirdHeight()
+    {
+        if (Math.Abs(currentHeight - _desiredHeight) > 0.05)
+            currentHeight = Mathf.Lerp(currentHeight, _desiredHeight, _scaleSpeed);
+        else
+            currentHeight = _desiredHeight;
+    }
+
+    private float GetMinimumHeight()
+    {
+        Physics.SphereCast(new Vector3(transform.position.x, maximumHeight, transform.position.z), 1.2f,Vector3.down, out RaycastHit hit, maximumHeight - minimumHeight);
+        return Mathf.Clamp(hit.point.y + minimumHeight, minimumHeight, maximumHeight);
+    }
 
     private void SwitchToTopDown()
     {
         Debug.Log("[CameraController]: Switched to top-down view!");
-        transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
-        transform.rotation = Quaternion.Euler(new Vector3(90f, 0f, 0f)); // look down
-
+        _desiredHeight = currentHeight;
+        cam.transform.parent = null;
+        transform.SetPositionAndRotation(new Vector3(transform.position.x, currentHeight, transform.position.z), Quaternion.Euler(new Vector3(90f, 0f, 0f)));
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
     }
@@ -101,21 +118,23 @@ public class CameraController : MonoBehaviour
     private void HandleTopDown()
     {
         // Scroll-wheel zoom logic
-        currentHeight = Mathf.Clamp(currentHeight + -Input.mouseScrollDelta.y, minimumHeight, maximumHeight);
+        _desiredHeight = Mathf.Clamp(_desiredHeight + Input.mouseScrollDelta.y * sensitivity.y/5f, GetMinimumHeight(), maximumHeight);
+        LerpBirdHeight();
         Vector3 targetLocation = new Vector3(transform.position.x, currentHeight, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetLocation, zoomSpeed * Time.deltaTime);
 
         // WASD movement
-        Vector3 moveXY = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
         float heightSpeedScale = Mathf.Sqrt(currentHeight - minimumHeight + 1f);
-        transform.position += heightSpeedScale * planeMoveBaseSpeed * Time.deltaTime * moveXY;
+        Vector2 newPos = heightSpeedScale * planeMoveBaseSpeed * Time.deltaTime * PlayerInputHandler.Instance.MoveInput + new Vector2(transform.position.x, transform.position.z);
 
         // Bounds
-        float newX = Mathf.Clamp(transform.position.x, boundary.minX, boundary.maxX);
-        float newZ = Mathf.Clamp(transform.position.z, boundary.minZ, boundary.maxZ);
+        float newX = Mathf.Clamp(newPos.x, boundary.minX, boundary.maxX);
+        float newZ = Mathf.Clamp(newPos.y, boundary.minZ, boundary.maxZ);
 
         transform.position = new Vector3(newX, currentHeight, newZ);
     }
+
+    #endregion
 
     public void OnDrawGizmosSelected()
     {
@@ -130,7 +149,7 @@ public class CameraController : MonoBehaviour
         Gizmos.DrawLine(topLeft, bottomLeft);
     }
 
-    // FIRST-PERSON
+    #region  FIRST-PERSON
 
     private void SwitchToFirstPerson()
     {
@@ -176,7 +195,9 @@ public class CameraController : MonoBehaviour
         return lastInputEvent;
     }
 
-    // CAMERA TARGET
+    #endregion
+
+    #region  CAMERA TARGET
 
     public void SetCameraTarget(GameObject other)
     {
@@ -187,4 +208,6 @@ public class CameraController : MonoBehaviour
     {
         return cameraTarget;
     }
+
+    #endregion
 }
