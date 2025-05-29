@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3653259047172388647}
   - component: {fileID: 5290409149386845587}
   - component: {fileID: 4512951407493535850}
+  - component: {fileID: 7448303903956844977}
   m_Layer: 0
   m_Name: PlayerObj
   m_TagString: Player
@@ -265,6 +266,19 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &7448303903956844977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165953148209847507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06a2a8f77f7d78d4f9158a857aab64f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1148575444728820634
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,6 +288,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3568642833347042471}
+  - component: {fileID: 5222952169745615442}
   m_Layer: 0
   m_Name: Camera Position On Player
   m_TagString: Untagged
@@ -296,6 +311,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6091686639153726454}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5222952169745615442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1148575444728820634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7eb6942845ae704aa3b33e83f0045a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &5793179830103059241
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,6 +333,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2749713222072533021}
+  - component: {fileID: 7507442694588226839}
   m_Layer: 0
   m_Name: Orientation
   m_TagString: Untagged
@@ -327,3 +356,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6091686639153726454}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7507442694588226839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5793179830103059241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9a97ef74040134c8b8a32f120e9a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
