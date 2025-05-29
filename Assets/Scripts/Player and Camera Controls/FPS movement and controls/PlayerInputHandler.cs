@@ -20,7 +20,8 @@ public class PlayerInputHandler : MonoBehaviour
         "Interact",
         "Pause",
         "Jump",
-        "Crouch"
+        "Crouch",
+        "SwitchCameraView"
     };
 
     // --- Input references ---
@@ -37,6 +38,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool CrouchTriggered => actions["Crouch"].triggered;
     public bool PauseTriggered => actions["Pause"].triggered;
     public bool InteractTriggered => actions["Interact"].triggered;
+    public bool CamSwitchTriggered => actions["SwitchCameraView"].triggered;
 
     #region  Singleton implementation
 
@@ -83,7 +85,7 @@ public class PlayerInputHandler : MonoBehaviour
 
         actions["Jump"].performed += context => JumpDown = true;
         actions["Jump"].canceled += context => JumpDown = false;
-        
+
         actions["Crouch"].performed += context => CrouchDown = true;
         actions["Crouch"].canceled += context => CrouchDown = false;
     }
