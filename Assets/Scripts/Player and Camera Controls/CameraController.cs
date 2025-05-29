@@ -165,7 +165,6 @@ public class CameraController : MonoBehaviour
         Cursor.visible = false;
     }
 
-
     private void HandleFirstPerson()
     {
         // TODO: implement body

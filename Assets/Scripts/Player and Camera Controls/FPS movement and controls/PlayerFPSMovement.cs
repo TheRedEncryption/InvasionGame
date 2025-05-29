@@ -13,12 +13,15 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _walkSpeed;
     public float _jumpSpeed;
     public float _moveSpeedError;
-
     public Transform cameraPositionOnPlayer;
     private Vector3 camStartLocalPos;
     public float cameraMoveSpeed;
     public float crouchOffset;
 
+    [Header("Quake 3 air controllers")]
+    public float _moveAccel;
+    public float _moveDeccel;
+    public float _airControl;
 
     private float MoveSpeed
     {
@@ -185,6 +188,49 @@ public class PlayerFPSMovement : MonoBehaviour
 
     #region WASD movement
 
+    private void MovePlayerGroundQuake(Vector3 moveDirection)
+    {
+
+        var wishdir = moveDirection;
+        wishdir = transform.TransformDirection(wishdir);
+        wishdir.Normalize();
+
+        var wishspeed = wishdir.magnitude;
+        wishspeed *= MoveSpeed;
+
+        Accelerate(wishdir, wishspeed, _moveAccel);
+
+        /*
+        // Reset the gravity velocity
+        m_PlayerVelocity.y = -m_Gravity * Time.deltaTime;
+
+        if (m_JumpQueued)
+        {
+            m_PlayerVelocity.y = m_JumpForce;
+            m_JumpQueued = false;
+        }
+        */
+    }
+
+    // Calculates acceleration based on desired speed and direction.
+    private void Accelerate(Vector3 targetDir, float targetSpeed, float accel)
+    {
+        float currentspeed = Vector3.Dot(_rb.linearVelocity, targetDir);
+        float addspeed = targetSpeed - currentspeed;
+
+        if (addspeed <= 0) return;
+
+        float accelspeed = accel * Time.deltaTime * targetSpeed;
+
+        if (accelspeed > addspeed)
+            accelspeed = addspeed;
+
+        Vector3 addPos = targetDir * accelspeed;
+        _rb.linearVelocity += addPos;
+        //m_PlayerVelocity.x += accelspeed * targetDir.x;
+        //m_PlayerVelocity.z += accelspeed * targetDir.z;
+    }
+
     private void MovePlayerGround(Vector3 moveDirection)
     {
         // First two check for ground conditions
@@ -192,6 +238,7 @@ public class PlayerFPSMovement : MonoBehaviour
         if (OnLevelGround) // If on a small slope
         {
             TryMoveXY(MoveSpeed * GetSlopeMoveDirection(moveDirection));
+            Debug.DrawRay(transform.position, MoveSpeed * GetSlopeMoveDirection(moveDirection), Color.green);
         }
         else if (OnSteepGround) // If on a big slope
         {
@@ -272,6 +319,85 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+
+    // Handle air movement.
+    private void MovePlayerAirNew(Vector3 moveDirection)
+    {
+        float accel;
+
+        var wishdir = moveDirection;
+        wishdir = transform.TransformDirection(wishdir);
+
+        float wishspeed = wishdir.magnitude;
+        wishspeed *= MoveSpeed;
+
+        wishdir = wishdir.normalized;
+
+        // CPM Air control.
+        float wishspeed2 = wishspeed;
+        if (Vector3.Dot(_rb.linearVelocity, wishdir) < 0)
+        {
+            accel = _moveDeccel;
+        }
+        else
+        {
+            accel = _moveAccel;
+        }
+
+        /*
+        // If the player is ONLY strafing left or right
+        if (PlayerInputHandler.Instance.MoveInput.y == 0 && PlayerInputHandler.Instance.MoveInput.x != 0)
+        {
+            if (wishspeed > m_StrafeSettings.MaxSpeed)
+            {
+                wishspeed = m_StrafeSettings.MaxSpeed;
+            }
+
+            accel = m_StrafeSettings.Acceleration;
+        }
+        */
+
+        Accelerate(wishdir, wishspeed, accel);
+        if (_airControl > 0)
+        {
+            AirControl(wishdir, wishspeed2);
+        }
+    }
+
+    // Air control occurs when the player is in the air, it allows players to move side 
+    // to side much faster rather than being 'sluggish' when it comes to cornering.
+    private void AirControl(Vector3 targetDir, float targetSpeed)
+    {
+        // Only control air movement when moving forward or backward.
+        if (Mathf.Abs(PlayerInputHandler.Instance.MoveInput.y) < 0.001 || Mathf.Abs(targetSpeed) < 0.001) return;
+
+        float zSpeed = _rb.linearVelocity.y;
+        _rb.linearVelocity -= new Vector3(0, _rb.linearVelocity.y, 0);
+        /* Next two lines are equivalent to idTech's VectorNormalize() */
+        float speed = _rb.linearVelocity.magnitude;
+        _rb.linearVelocity = _rb.linearVelocity.normalized;
+
+        float dot = Vector3.Dot(_rb.linearVelocity, targetDir);
+        float k = 32;
+        k *= _airControl * dot * dot * Time.deltaTime;
+
+        // Change direction while slowing down.
+        if (dot > 0)
+        {
+            _rb.linearVelocity = new( _rb.linearVelocity.x * (speed + targetDir.x * k), _rb.linearVelocity.y * (speed + targetDir.y * k), _rb.linearVelocity.z * (speed + targetDir.z * k) );
+
+            _rb.linearVelocity = _rb.linearVelocity.normalized;
+        }
+
+        Vector3 playSpeed = _rb.linearVelocity;
+
+        playSpeed.x *= speed;
+        playSpeed.y = zSpeed; // Note this line
+        playSpeed.z *= speed;
+
+        _rb.linearVelocity = playSpeed;
+    }
+
     private void TryMoveXY(Vector3 amount)
     {
         Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
@@ -284,15 +410,12 @@ public class PlayerFPSMovement : MonoBehaviour
             amount = goalX - preVelocityX;
         }
 
-        _rb.AddForce(amount+ amountOrigY, ForceMode.VelocityChange);
+        _rb.AddForce(Grounded ? Vector3.ProjectOnPlane(amount, _slopeHit.normal) : amount, ForceMode.VelocityChange);
     }
 
     private Vector3 NormalizeToMoveSpeed(Vector3 amount, float speed) => amount.normalized * Mathf.Max(MoveSpeed, speed);
+
     #endregion
-
-
-
-
 
     #region Jumping
     private void JumpHandler()
@@ -333,7 +456,7 @@ public class PlayerFPSMovement : MonoBehaviour
         _readyToJump = true;
     }
     #endregion
-    #region
+    #region Couching
     private void CrouchHandle()
     {
         if (!PlayerInputHandler.Instance.CrouchDown)

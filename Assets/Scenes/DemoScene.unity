@@ -12980,7 +12980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTarget: {fileID: 0}
-  currentCameraState: 0
+  currentCameraState: 1
   minimumHeight: 1
   maximumHeight: 100
   currentHeight: 5
@@ -55402,7 +55402,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1791783786
 Transform:
   m_ObjectHideFlags: 0
@@ -55412,7 +55412,7 @@ Transform:
   m_GameObject: {fileID: 1791783785}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 200, z: 0}
+  m_LocalPosition: {x: 19.2, y: 200, z: 25.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -55434,7 +55434,7 @@ MonoBehaviour:
   - {fileID: 1482401364953134854, guid: 38dc54857aac41d4aba1b29980b9685f, type: 3}
   - {fileID: 45394407644418846, guid: bfa7a81b8cec0584cb4bff1245a08e88, type: 3}
   - {fileID: 8370251037417898681, guid: 411b5dd5280a60b4193b6b5cb9a287fd, type: 3}
-  _maxScale: {x: 0.01, y: 0.1}
+  _maxScale: {x: 0.01, y: 3}
   _scaleCurve:
     serializedVersion: 2
     m_Curve:
@@ -55448,8 +55448,17 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.036158193
     - serializedVersion: 3
-      time: 0.5
-      value: 0.49998832
+      time: 0.30855292
+      value: 0.42433545
+      inSlope: 0.109005556
+      outSlope: 0.109005556
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9135734
+      value: 0.46006155
       inSlope: 0.28754196
       outSlope: 0.28754196
       tangentMode: 0
@@ -55468,8 +55477,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _maxPositionSpawn: {x: 0, y: 100, z: 0}
-  _maxVelocity: 0
+  _maxPositionSpawn: {x: 50, y: 100, z: 50}
+  _maxVelocity: 6
   _maxProps: 3000
   _spawnPerFram: 50
   _basePlate: {fileID: 738519777}
@@ -58831,13 +58840,16 @@ MonoBehaviour:
   cameraPositionOnPlayer: {fileID: 356242220}
   cameraMoveSpeed: 20
   crouchOffset: 0.5
+  _moveAccel: 100000
+  _moveDeccel: 0
+  _airControl: 1
   _groundDrag: 5
   _airDrag: 0
   _slowDrag: 15
   _coyotyeTime: 0.1
   _jumpCooldown: 0.25
   _slopeExchangeAngle: 45
-  _scanHeight: -0.35
+  _scanHeight: -0.32
   _orientation: {fileID: 612934366}
 --- !u!136 &1942809327
 CapsuleCollider:
