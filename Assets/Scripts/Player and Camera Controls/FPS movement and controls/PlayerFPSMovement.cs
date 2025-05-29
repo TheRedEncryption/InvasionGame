@@ -27,8 +27,6 @@ public class PlayerFPSMovement : MonoBehaviour
 
     public Transform cameraPositionOnPlayer;
     private Vector3 camStartLocalPos;
-    public float cameraMoveSpeed;
-    public float crouchOffset;
 
     [Header("Quake 3 air controllers")]
     public float _moveAccel;
