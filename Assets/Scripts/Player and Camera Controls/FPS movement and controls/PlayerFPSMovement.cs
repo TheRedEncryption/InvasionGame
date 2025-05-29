@@ -4,6 +4,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class PlayerFPSMovement : MonoBehaviour
 {
+
     // *******************
     // -- Planar Movement
     // *******************
@@ -73,7 +74,9 @@ public class PlayerFPSMovement : MonoBehaviour
     [Header("Other")]
     public float _slopeExchangeAngle;
     public float _scanHeight;
+    public float groundedSphereRadius = 0.48f;
     public Transform _orientation;
+
 
     RaycastHit _slopeHit;
     Rigidbody _rb;
@@ -85,6 +88,7 @@ public class PlayerFPSMovement : MonoBehaviour
     public enum SlopeState { flat = -2, minorSlope = -1, none = 0, steepSlope = 1, vertical = 2 }
     public PlayerMoveState MoveState { get; private set; }
     public SlopeState PlayerSlopeState { get; private set; }
+    private SlopeState PlayerPreviousSlopeState { get; set; }
 
     // player slope state data helpers
     public bool OnLevelGround { get => PlayerSlopeState < 0; }
@@ -121,12 +125,12 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), 0.48f);
+        Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), groundedSphereRadius);
     }
 
     private void FixedUpdate()
     {
-        Grounded = Physics.SphereCast(transform.position, 0.48f, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
+        Grounded = Physics.SphereCast(transform.position, groundedSphereRadius, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
         _rb.useGravity = !OnLevelGround;
         StateHandler();
@@ -183,6 +187,7 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void StateHandler()
     {
+        PlayerPreviousSlopeState = PlayerSlopeState;
         PlayerSlopeState = OnSlope();
 
         if (!Grounded)
@@ -434,6 +439,19 @@ public class PlayerFPSMovement : MonoBehaviour
         Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
         Vector3 amountVelX = new(amount.x, 0, amount.z);
         Vector3 amountOrigY = new Vector3(0, amount.y, 0);
+        if (Grounded && PlayerPreviousSlopeState == SlopeState.minorSlope && PlayerSlopeState == SlopeState.flat)
+        {
+            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+        }
+        //else if (Grounded && PlayerPreviousSlopeState == SlopeState.flat && PlayerSlopeState == SlopeState.minorSlope)
+        //{
+        //    Vector3 slopeNormal = _slopeHit.normal;
+        //    Vector3 projected = GetSlopeMoveDirection(_rb.linearVelocity);
+        //    // Remove the component of velocity along the slope's normal (y relative to slope)
+        //    float mag = _rb.linearVelocity.magnitude;
+        //    _rb.linearVelocity = projected * mag;
+
+        //}
 
         if ((preVelocityX + amountVelX).magnitude > MoveSpeed)
         {
