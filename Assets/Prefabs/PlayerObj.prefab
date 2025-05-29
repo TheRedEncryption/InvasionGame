@@ -134,9 +134,11 @@ MonoBehaviour:
   _walkSpeed: 10
   _jumpSpeed: 6
   _moveSpeedError: 5
-  cameraPositionOnPlayer: {fileID: 3568642833347042471}
-  cameraMoveSpeed: 20
   crouchOffset: 0.5
+  cameraMoveSpeed: 20
+  _slideSpeed: 7
+  _defaultSlideTime: 1.5
+  cameraPositionOnPlayer: {fileID: 3568642833347042471}
   _groundDrag: 5
   _airDrag: 0
   _slowDrag: 15
@@ -368,3 +370,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9a97ef74040134c8b8a32f120e9a46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
