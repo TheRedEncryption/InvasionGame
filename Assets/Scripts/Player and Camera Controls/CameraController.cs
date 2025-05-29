@@ -52,6 +52,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (!ValidateCameraOperable()) { return; }
 
         if (PlayerInputHandler.Instance.CamSwitchTriggered)
         {
@@ -89,6 +90,11 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    bool ValidateCameraOperable()
+    {
+        return cameraTarget && _playerOrientation;
+    }
+
     #region  TOP-DOWN
 
     private void LerpBirdHeight()
@@ -101,7 +107,7 @@ public class CameraController : MonoBehaviour
 
     private float GetMinimumHeight()
     {
-        Physics.SphereCast(new Vector3(transform.position.x, maximumHeight, transform.position.z), 1.2f,Vector3.down, out RaycastHit hit, maximumHeight - minimumHeight);
+        Physics.SphereCast(new Vector3(transform.position.x, maximumHeight, transform.position.z), 1.2f, Vector3.down, out RaycastHit hit, maximumHeight - minimumHeight);
         return Mathf.Clamp(hit.point.y + minimumHeight, minimumHeight, maximumHeight);
     }
 
@@ -118,7 +124,7 @@ public class CameraController : MonoBehaviour
     private void HandleTopDown()
     {
         // Scroll-wheel zoom logic
-        _desiredHeight = Mathf.Clamp(_desiredHeight + Input.mouseScrollDelta.y * sensitivity.y/5f, GetMinimumHeight(), maximumHeight);
+        _desiredHeight = Mathf.Clamp(_desiredHeight + Input.mouseScrollDelta.y * sensitivity.y / 5f, GetMinimumHeight(), maximumHeight);
         LerpBirdHeight();
         Vector3 targetLocation = new Vector3(transform.position.x, currentHeight, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetLocation, zoomSpeed * Time.deltaTime);
@@ -206,6 +212,11 @@ public class CameraController : MonoBehaviour
     public GameObject GetCameraTarget()
     {
         return cameraTarget;
+    }
+
+    public void SetPlayerOrientationTransform(Transform playerOrientationTransform)
+    {
+        this._playerOrientation = playerOrientationTransform;
     }
 
     #endregion
