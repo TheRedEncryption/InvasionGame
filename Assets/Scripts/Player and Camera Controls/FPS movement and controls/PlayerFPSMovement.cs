@@ -105,6 +105,9 @@ public class PlayerFPSMovement : MonoBehaviour
     // -- Unity Mono Methods
     // *******************
 
+    /// <summary>
+    /// Called on start to initialize variables.
+    /// </summary>
     private void Start()
     {
         _rb = GetComponent<Rigidbody>();
@@ -112,8 +115,11 @@ public class PlayerFPSMovement : MonoBehaviour
         camStartLocalPos = cameraPositionOnPlayer.localPosition;
         _lastY = transform.position.y;
         deltaYDirection = 0;
-}
+    }
 
+    /// <summary>
+    /// Handles per-frame checks
+    /// </summary>
     void Update()
     {
         deltaYDirection = _lastY < transform.position.y ? 1 : (_lastY > transform.position.y ? -1 : 0);
@@ -127,18 +133,23 @@ public class PlayerFPSMovement : MonoBehaviour
         GroundActions();
     }
 
+    /// <summary>
+    /// Draws a wire sphere in the editor to visualize the grounded check area.
+    /// </summary>
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.position - Vector3.up * (1 + _scanHeight), groundedSphereRadius);
     }
 
+    /// <summary>
+    /// Handles physics-based movement, grounded checks, and state transitions.
+    /// </summary>
     private void FixedUpdate()
     {
         Grounded = Physics.SphereCast(transform.position, groundedSphereRadius, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
         _rb.useGravity = !OnLevelGround;
         StateHandler();
-
 
         CrouchHandle();
 
@@ -147,7 +158,6 @@ public class PlayerFPSMovement : MonoBehaviour
 
         if (moveDirection.magnitude == 0)
             return;
-
 
         // Execute movement based on movestate
         switch (MoveState)
@@ -168,13 +178,20 @@ public class PlayerFPSMovement : MonoBehaviour
                 Debug.LogWarning("Invalid Movestate: " + MoveState);
                 break;
         }
-
     }
 
     // *******************
     // -- My Methods
     // *******************
+
+    /// <summary>
+    /// Returns a vector with the Y component set to zero, preserving X and Z.
+    /// </summary>
     private Vector3 PlanarVector(Vector3 original) => new Vector3(original.x, 0, original.z);
+
+    /// <summary>
+    /// Updates coyote time and last grounded position based on grounded state.
+    /// </summary>
     private void GroundActions()
     {
         if (Grounded)
@@ -189,6 +206,9 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the player's movement and slope state, and applies drag.
+    /// </summary>
     private void StateHandler()
     {
         PreviousPlayerSlopeStates.Add(PlayerSlopeState);
@@ -216,9 +236,11 @@ public class PlayerFPSMovement : MonoBehaviour
 
     #region WASD movement
 
+    /// <summary>
+    /// Moves the player on the ground using Quake-style acceleration.
+    /// </summary>
     private void MovePlayerGroundQuake(Vector3 moveDirection)
     {
-
         var wishdir = moveDirection;
         wishdir = transform.TransformDirection(wishdir);
         wishdir.Normalize();
@@ -259,6 +281,9 @@ public class PlayerFPSMovement : MonoBehaviour
         //m_PlayerVelocity.z += accelspeed * targetDir.z;
     }
 
+    /// <summary>
+    /// Handles player movement when grounded on level or steep surfaces.
+    /// </summary>
     private void MovePlayerGround(Vector3 moveDirection)
     {
         // First two check for ground conditions
@@ -283,6 +308,9 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles player movement when crouching or sliding.
+    /// </summary>
     private void MovePlayerSlow(Vector3 moveDirection)
     {
         // Enter sliding
@@ -323,6 +351,9 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles player movement while airborne, including speed limiting and direction changes.
+    /// </summary>
     private void MovePlayerAir(Vector3 moveDirection)
     {
         if (PlanarVector(_rb.linearVelocity).magnitude <= MoveSpeed + _moveSpeedError) // If moving normal speeds
@@ -362,8 +393,11 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    // "Handle air movement"
 
-    // Handle air movement.
+    /// <summary>
+    /// Handles air movement using Quake/CPM-style air control.
+    /// </summary>
     private void MovePlayerAirNew(Vector3 moveDirection)
     {
         float accel;
@@ -409,6 +443,10 @@ public class PlayerFPSMovement : MonoBehaviour
 
     // Air control occurs when the player is in the air, it allows players to move side 
     // to side much faster rather than being 'sluggish' when it comes to cornering.
+
+    /// <summary>
+    /// Provides additional air control for sharper turns while airborne.
+    /// </summary>
     private void AirControl(Vector3 targetDir, float targetSpeed)
     {
         // Only control air movement when moving forward or backward.
@@ -441,6 +479,9 @@ public class PlayerFPSMovement : MonoBehaviour
         _rb.linearVelocity = playSpeed;
     }
 
+    /// <summary>
+    /// Attempts to move the player in the XZ plane, applying speed limits and slope corrections.
+    /// </summary>
     private void TryMoveXY(Vector3 amount)
     {
         Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
@@ -470,11 +511,18 @@ public class PlayerFPSMovement : MonoBehaviour
         _rb.AddForce(Grounded ? Vector3.ProjectOnPlane(amount, _slopeHit.normal) : amount, ForceMode.VelocityChange);
     }
 
+    /// <summary>
+    /// Normalizes a vector to the current move speed, preserving direction.
+    /// </summary>
     private Vector3 NormalizeToMoveSpeed(Vector3 amount, float speed) => amount.normalized * Mathf.Max(MoveSpeed, speed);
 
     #endregion
 
     #region Jumping
+
+    /// <summary>
+    /// Handles jump input, coyote time, and jump cooldown logic.
+    /// </summary>
     private void JumpHandler()
     {
         if (_readyToJump && _coyotyeTimeCurr > 0)
@@ -487,6 +535,9 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Applies an upward force to the Rigidbody to make the player jump.
+    /// </summary>
     private void Jump()
     {
         if (_coyotyeTimeCurr > 0)
@@ -507,13 +558,21 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resets jump state and coyote time after the jump cooldown.
+    /// </summary>
     private void ResetJump()
     {
         _coyotyeTimeCurr = 0;
         _readyToJump = true;
     }
     #endregion
+
     #region Couching
+
+    /// <summary>
+    /// Handles crouch and slide state, including camera position adjustments.
+    /// </summary>
     private void CrouchHandle()
     {
         if (!PlayerInputHandler.Instance.CrouchDown)
@@ -542,9 +601,9 @@ public class PlayerFPSMovement : MonoBehaviour
     #region Slope Handling
 
     /// <summary>
-    /// Returns the current slopeState
+    /// Returns the current slope state based on the ground normal and angle.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current slopeState.</returns>
     public SlopeState OnSlope()
     {
         if (!Grounded) return SlopeState.none;
@@ -571,9 +630,10 @@ public class PlayerFPSMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Projects a direction onto a plane; normalized.
+    /// Projects a direction vector onto the slope plane and normalizes it.
     /// </summary>
-    /// <param name="direction"></param>
+    /// <param name="direction">The direction to project.</param>
+    /// <returns>Normalized direction projected onto the slope.</returns>
     public Vector3 GetSlopeMoveDirection(Vector3 direction) => Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
 
     #endregion
