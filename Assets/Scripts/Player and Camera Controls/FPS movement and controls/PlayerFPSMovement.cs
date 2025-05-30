@@ -272,7 +272,6 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             Vector3 slopePlanarDir = PlanarVector(_slopeHit.normal);
             Vector3 projectedMovement = PlanarVector(moveDirection);
-
             if (Vector3.Dot(slopePlanarDir, projectedMovement) > 0)
             {
                 TryMoveXY(MoveSpeed * projectedMovement);
