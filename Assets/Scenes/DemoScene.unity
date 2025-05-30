@@ -12980,7 +12980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTarget: {fileID: 0}
-  currentCameraState: 1
+  currentCameraState: 0
   minimumHeight: 1
   maximumHeight: 100
   currentHeight: 5

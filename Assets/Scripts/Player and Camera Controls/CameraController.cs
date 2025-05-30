@@ -54,6 +54,7 @@ public class CameraController : MonoBehaviour
     {
         if (!ValidateCameraOperable()) { return; }
 
+        // TODO: 
         if (PlayerInputHandler.Instance.CamSwitchTriggered)
         {
             if (currentCameraState == CameraState.TopDown)
@@ -90,8 +91,15 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Validates the operability of the camera, based on if its dependant assignments are present within the Scene.
+    /// </summary>
+    /// <returns> Whether the camera is operable in top-down and FPS views. </returns>
     bool ValidateCameraOperable()
     {
+        // for future understanding, add more conditions if you want to bar the camera from being used,
+        // as of right now it is checking for the existence of the "Camera Position On Player" and
+        // "Orientation" GameObjects.
         return cameraTarget && _playerOrientation;
     }
 
