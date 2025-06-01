@@ -154,13 +154,13 @@ public class PlayerFPSMovement : MonoBehaviour
         //Decrease slide time
         if (_isSliding && MoveState == PlayerMoveState.air)
         {
-            slideTime -= Time.deltaTime;
-            if(slideTime <= _defaultSlideTime)
-            {
-                _isSliding = false;
-            }
+            //slideTime -= Time.deltaTime;
+            //if(slideTime <= _defaultSlideTime)
+            //{
+            //    _isSliding = false;
+            //}
         }
-        else if (_isSliding)
+        else if (_isSliding && MoveState == PlayerMoveState.sliding)
             slideTime -= Time.deltaTime + deltaYDirection * (0.02f + Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f * 0.03f) * _slopeSpeedModifier;
         if (slideTime <= 0f)
             _isSliding = false;
@@ -351,7 +351,7 @@ public class PlayerFPSMovement : MonoBehaviour
             }
             else if (deltaYDirection == 1f)
             {
-                slopeEquation = _slopeSpeedModifier * -0.5f * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
+                slopeEquation = _slopeSpeedModifier * -0.1f * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
             }
             else
             {
