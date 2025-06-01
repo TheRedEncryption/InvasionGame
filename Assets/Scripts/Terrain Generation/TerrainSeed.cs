@@ -10,8 +10,9 @@ public class TerrainSeed : MonoBehaviour
     private Mesh mesh;
 
     // Lists for the vertices and triangles that will then be fed into the array
-    private List<Vector3> vertexGrid = new List<Vector3>();
+    private List<Vector3> vertexList = new List<Vector3>();
     private List<int> triangleList = new List<int>();
+    private List<Vector3> normalList = new List<Vector3>();
 
     // width and height of the plane to generate over
     private int width;
@@ -21,16 +22,21 @@ public class TerrainSeed : MonoBehaviour
     [Header("Terrain Controls")]
     [SerializeField] private int seed;
     [SerializeField] private Bounds2DInt terrainBoundary;
-    [SerializeField] private float scale = 1;
+    [SerializeField] private float noiseScale = 0.1f;
+    [SerializeField] private int heightSteps = 10;
+    private int offset;
+
 
     // To visualize the mesh values
     [Header("Mesh Value Visualization")]
     [SerializeField] private Vector3[] vertexArray;
     [SerializeField] private int[] triangleArray;
+    [SerializeField] private Vector3[] normalArray;
 
     void Start()
     {
         UnityEngine.Random.InitState(seed); // allows for reproducibility
+        offset = UnityEngine.Random.Range(0, 65535); // simulate seeding!
 
         meshFilter = GetComponent<MeshFilter>();
         mesh = new Mesh();
@@ -42,7 +48,7 @@ public class TerrainSeed : MonoBehaviour
 
         meshFilter.mesh = mesh;
 
-        // TODO: set bounds and center of mesh using code
+        // TODO: set bounds and center of mesh using code (IMPORTANT OR ELSE MESH DISAPPEARS FROM VIEW)
     }
 
     #region GENERATION
@@ -53,28 +59,49 @@ public class TerrainSeed : MonoBehaviour
 
         InitializeTriangleArray();
 
-        vertexArray = new Vector3[vertexGrid.Count];
-        mesh.vertices = new Vector3[vertexGrid.Count];
-        vertexGrid.CopyTo(vertexArray);
+        // CalculateNormals();
+
+        vertexArray = new Vector3[vertexList.Count];
+        mesh.vertices = new Vector3[vertexList.Count];
+        vertexList.CopyTo(vertexArray);
 
         triangleArray = new int[triangleList.Count];
         mesh.triangles = new int[triangleList.Count];
         triangleList.CopyTo(triangleArray);
 
+        // normalArray = new Vector3[normalList.Count];
+        // mesh.normals = new Vector3[normalList.Count];
+        // normalList.CopyTo(normalArray);
+
         mesh.vertices = vertexArray;
         mesh.triangles = triangleArray;
+        // mesh.normals = normalArray;
+
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
     }
 
     private void InitializeVertexGrid()
     {
+        vertexList.Clear(); // just to be safe
+
         for (int zRow = 0; zRow <= height - 1; zRow++)
         {
             for (int xCol = 0; xCol <= width - 1; xCol++)
             {
-                vertexGrid.Add(new Vector3Int(xCol, (int)UnityEngine.Random.Range(0, scale + 1), zRow));
+                float xCoord = xCol * noiseScale + offset;
+                float zCoord = zRow * noiseScale + offset;
+
+                float perlinValue = Mathf.PerlinNoise(xCoord, zCoord);
+                int newY = Mathf.FloorToInt(perlinValue * heightSteps);
+
+                Vector3Int voxelVertex = new Vector3Int(xCol + terrainBoundary.minX, newY, zRow + terrainBoundary.minZ);
+
+                vertexList.Add(voxelVertex);
             }
         }
     }
+
 
     private void InitializeTriangleArray()
     {
@@ -89,6 +116,25 @@ public class TerrainSeed : MonoBehaviour
         }
     }
 
+    private void CalculateNormals()
+    {
+        for (int i = 0; i < triangleList.Count; i += 3)
+        {
+            int pIndex = triangleList[i];
+            int qIndex = triangleList[i + 1];
+            int rIndex = triangleList[i + 2];
+
+            Vector3 p = vertexList[pIndex];
+            Vector3 q = vertexList[qIndex];
+            Vector3 r = vertexList[rIndex];
+
+            Vector3 normal = CalculateClockwiseNormal(p, q, r);
+
+            normalList.Add(normal);
+            Debug.DrawRay((p + q + r) / 3f, normal, Color.green, 1f);
+        }
+    }
+
     private void GenerateSingleSquare(int k)
     {
         triangleList.Add(k);             // A
@@ -100,14 +146,14 @@ public class TerrainSeed : MonoBehaviour
         triangleList.Add(k + width + 1); // D
     }
 
-    private Vector3Int GetVertexFromXZ(int x, int z)
+    public static Vector3 CalculateClockwiseNormal(Vector3 p, Vector3 q, Vector3 r)
     {
-        if ((z * width + x) <= vertexGrid.Count)
-        {
-            Vector3 element = vertexGrid[z * width + x];
-            return new Vector3Int((int)element.x, (int)element.y, (int)element.z);
-        }
-        return new Vector3Int(0, 0, 0); // TODO: do something about this later 
+        // get edge vectors
+        Vector3 pq = q - p;
+        Vector3 pr = r - p;
+
+        // flip the cross product because clockwise winding
+        return Vector3.Cross(pr, pq).normalized;
     }
 
     #endregion GENERATION
