@@ -25,6 +25,8 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _slopeSpeedModifier = 1f;
     private float slideTime = 5f;
     private bool _isSliding;
+    public float _uphillSlideModifier;
+    public float _downhillSlideModifier;
     private float _lastY;
     private int deltaYDirection; // -1, 0, 1 (Down, Neutral, Up)
 
@@ -160,6 +162,10 @@ public class PlayerFPSMovement : MonoBehaviour
                 _isSliding = false;
             }
         }
+        else if (PlayerMoveState.sliding != MoveState)
+        {
+            slideTime = 0f;
+        }
         else if (_isSliding)
             slideTime -= Time.deltaTime + deltaYDirection * (0.02f + Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f * 0.03f) * _slopeSpeedModifier;
         if (slideTime <= 0f)
@@ -239,12 +245,14 @@ public class PlayerFPSMovement : MonoBehaviour
         }
         PlayerSlopeState = OnSlope();
 
+        PlayerMoveState previousMoveState = MoveState;
+
         Vector3 planarVel = PlanarVector(_rb.linearVelocity);
         if (!Grounded)
         {
             MoveState = PlayerMoveState.air;
         }
-        else if (PlayerInputHandler.Instance.CrouchDown && (planarVel.magnitude) > 6f)
+        else if (PlayerInputHandler.Instance.CrouchDown && (planarVel.magnitude) > _slowSpeed-1f)
         {
             MoveState = PlayerMoveState.sliding;
         }
@@ -255,6 +263,11 @@ public class PlayerFPSMovement : MonoBehaviour
         else
         {
             MoveState = PlayerMoveState.walking;
+        }
+
+        if(previousMoveState != MoveState)
+        {
+            Debug.Log($"Player move state changed from {previousMoveState} to {MoveState} with velocity {planarVel.magnitude}");
         }
 
         _rb.linearDamping = Drag;
@@ -343,15 +356,15 @@ public class PlayerFPSMovement : MonoBehaviour
         }
         else
         {
-            Debug.Log(Vector3.Angle(Vector3.up, _slopeHit.normal));
+            //Debug.Log(Vector3.Angle(Vector3.up, _slopeHit.normal));
             float slopeEquation;
             if (deltaYDirection == -1f)
             {
-                slopeEquation = _slopeSpeedModifier * 0.5f * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
+                slopeEquation = _slopeSpeedModifier * 0.1f * _downhillSlideModifier * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
             }
             else if (deltaYDirection == 1f)
             {
-                slopeEquation = _slopeSpeedModifier * -0.5f * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
+                slopeEquation = _slopeSpeedModifier * -0.1f * _uphillSlideModifier * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
             }
             else
             {
@@ -578,6 +591,16 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void Jump()
     {
+        if(_isSliding)
+        {
+            // Stop sliding when jumping
+            _isSliding = false;
+            slideTime = 0f;
+            //_rb.AddForce(transform.up * _jumpSpeed, ForceMode.VelocityChange);
+            Debug.Log("Jumping from slide state, stopping slide.");
+            //return;
+        }
+
         if (_coyotyeTimeCurr > 0)
         {
             _coyotyeTimeCurr = 0;
