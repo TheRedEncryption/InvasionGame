@@ -29903,7 +29903,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: islandFalloff
-      value: 0.413
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainBoundary.maxX
