@@ -13,11 +13,13 @@ public class TerrainSeed : MonoBehaviour
     // Lists for the vertices and triangles that will then be fed into the array
     private List<Vector3> vertexList = new List<Vector3>();
     private List<int> triangleList = new List<int>();
-    private List<Vector3> normalList = new List<Vector3>();
 
     // width and depth of the plane to generate over
     private int width;
     private int depth;
+
+    private float rootArea;
+    private Vector2 origin;
 
     // To control the terrain
     [Header("Terrain Controls")]
@@ -25,8 +27,11 @@ public class TerrainSeed : MonoBehaviour
     [SerializeField] private Bounds2DInt terrainBoundary;
     [SerializeField] private float noiseScale = 0.1f;
     [SerializeField] private int heightSteps = 10;
-    [SerializeField] private int islandFalloff;
-    [SerializeField] private int heightBias;
+    [SerializeField, Range(0f, 1f)] private float islandFalloff;
+    [SerializeField] private int heightBias; // TODO: programmatically calculate this based on the maximum vertex
+                                             // height along the boundaries (or approximate it using smallest distance
+                                             // to edge's midpoint and seeing what the falloff would be there)
+    [SerializeField] private bool isIsland = true; // control whether or not this is an island before generation 
     private int offset;
 
 
@@ -44,23 +49,25 @@ public class TerrainSeed : MonoBehaviour
         meshFilter = GetComponent<MeshFilter>();
         mesh = new Mesh();
 
+        // TODO: abstract these into a future UpdateSizeProperties() method
         width = terrainBoundary.Size.x + 1;
         depth = terrainBoundary.Size.y + 1; // we are using the Y channel for Z values
+        rootArea = Mathf.Sqrt(width * depth);
+        origin = new Vector2((terrainBoundary.maxX + terrainBoundary.minX) / 2, (terrainBoundary.maxZ + terrainBoundary.minZ) / 2);
 
-        GenerateTerrainMesh();
 
-        meshFilter.mesh = mesh;
-
-        meshCollider = GetComponent<MeshCollider>();
-        meshCollider.sharedMesh = meshFilter.mesh;
+        GenerateTerrainMesh(); // TODO: remove, for now this is for testing purposes but this must be called by the map 
+                               // loading system (to be implemented in the future)
     }
 
     #region GENERATION
 
     public void GenerateTerrainMesh()
     {
-        InitializeVertexGrid();
 
+        // TODO: figure out how to properly set transform to center of generation box such that scaling is properly applied wrt the center of the terrain
+
+        InitializeVertexGrid();
         InitializeTriangleArray();
 
         vertexArray = new Vector3[vertexList.Count];
@@ -76,6 +83,11 @@ public class TerrainSeed : MonoBehaviour
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
+
+        meshFilter.mesh = mesh;
+
+        meshCollider = GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = meshFilter.mesh;
     }
 
     private void InitializeVertexGrid()
@@ -94,24 +106,28 @@ public class TerrainSeed : MonoBehaviour
 
     private Vector3Int GenerateVertex(int xPos, int zPos)
     {
+        // first, convert from world to noise space
         float xCoord = xPos * noiseScale + offset;
         float zCoord = zPos * noiseScale + offset;
 
+        // get perlin value and scale it, remembering to floor it afterwards
         float perlinValue = Mathf.PerlinNoise(xCoord, zCoord);
-        int newY = Mathf.FloorToInt(perlinValue * heightSteps);
+        int newY = Mathf.FloorToInt(perlinValue * heightSteps + 1);
 
-        Vector2 origin = new Vector2((terrainBoundary.maxX + terrainBoundary.minX) / 2, (terrainBoundary.maxZ + terrainBoundary.minZ) / 2);
-
-        newY -= Falloff(xPos + terrainBoundary.minX, zPos + terrainBoundary.minZ, origin, islandFalloff);
+        // apply falloff if it is an island (very much will be in most cases)
+        if (isIsland)
+        {
+            newY -= Falloff(xPos + terrainBoundary.minX, zPos + terrainBoundary.minZ, origin, islandFalloff);
+        }
 
         return new Vector3Int(xPos + terrainBoundary.minX, newY + heightBias, zPos + terrainBoundary.minZ);
     }
 
-    private int Falloff(int x, int z, Vector2 origin, int falloffScale)
+    private int Falloff(int x, int z, Vector2 origin, float falloffScale)
     {
         Vector2 point = new Vector2Int(x, z);
         float distance = (point - origin).magnitude;
-        return (int)(distance * distance / falloffScale);
+        return (int)(distance * distance * falloffScale / rootArea);
     }
 
     private void InitializeTriangleArray()
