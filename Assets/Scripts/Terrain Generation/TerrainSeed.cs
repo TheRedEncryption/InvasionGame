@@ -47,14 +47,6 @@ public class TerrainSeed : MonoBehaviour
         offset = UnityEngine.Random.Range(0, 65535); // simulate seeding!
 
         meshFilter = GetComponent<MeshFilter>();
-        mesh = new Mesh();
-
-        // TODO: abstract these into a future UpdateSizeProperties() method
-        width = terrainBoundary.Size.x + 1;
-        depth = terrainBoundary.Size.y + 1; // we are using the Y channel for Z values
-        rootArea = Mathf.Sqrt(width * depth);
-        origin = new Vector2((terrainBoundary.maxX + terrainBoundary.minX) / 2, (terrainBoundary.maxZ + terrainBoundary.minZ) / 2);
-
 
         GenerateTerrainMesh(); // TODO: remove, for now this is for testing purposes but this must be called by the map 
                                // loading system (to be implemented in the future)
@@ -64,10 +56,21 @@ public class TerrainSeed : MonoBehaviour
 
     public void GenerateTerrainMesh()
     {
+        UpdateSizeProperties();
 
-        // TODO: figure out how to properly set transform to center of generation box such that scaling is properly applied wrt the center of the terrain
+        transform.position = new Vector3(origin.x, transform.position.y, origin.y);
+
+        meshFilter.mesh.Clear();
+        mesh = new Mesh();
 
         InitializeVertexGrid();
+
+        // apply falloff if it is an island (very much will be in most cases)
+        if (isIsland)
+        {
+            ApplyFalloff(islandFalloff);
+        }
+
         InitializeTriangleArray();
 
         vertexArray = new Vector3[vertexList.Count];
@@ -88,6 +91,14 @@ public class TerrainSeed : MonoBehaviour
 
         meshCollider = GetComponent<MeshCollider>();
         meshCollider.sharedMesh = meshFilter.mesh;
+    }
+
+    private void UpdateSizeProperties()
+    {
+        width = terrainBoundary.Size.x + 1;
+        depth = terrainBoundary.Size.y + 1; // we are using the Y channel for Z values
+        rootArea = Mathf.Sqrt(width * depth);
+        origin = new Vector2((terrainBoundary.maxX + terrainBoundary.minX) / 2, (terrainBoundary.maxZ + terrainBoundary.minZ) / 2);
     }
 
     private void InitializeVertexGrid()
@@ -114,19 +125,25 @@ public class TerrainSeed : MonoBehaviour
         float perlinValue = Mathf.PerlinNoise(xCoord, zCoord);
         int newY = Mathf.FloorToInt(perlinValue * heightSteps + 1);
 
-        // apply falloff if it is an island (very much will be in most cases)
-        if (isIsland)
-        {
-            newY -= Falloff(xPos + terrainBoundary.minX, zPos + terrainBoundary.minZ, origin, islandFalloff);
-        }
-
-        return new Vector3Int(xPos + terrainBoundary.minX, newY + heightBias, zPos + terrainBoundary.minZ);
+        return new Vector3Int(xPos - width / 2, newY + heightBias, zPos - depth / 2);
     }
 
-    private int Falloff(int x, int z, Vector2 origin, float falloffScale)
+    private void ApplyFalloff(float islandFalloffScale)
+    {
+        for (int zRow = 0; zRow <= depth - 1; zRow++)
+        {
+            for (int xCol = 0; xCol <= width - 1; xCol++)
+            {
+                vertexList[zRow * width + xCol] -= new Vector3(0f, Falloff(xCol + (int)origin.x - (width / 2), zRow + (int)origin.y - (depth / 2), islandFalloffScale), 0f);
+            }
+        }
+    }
+
+    private int Falloff(int x, int z, float falloffScale)
     {
         Vector2 point = new Vector2Int(x, z);
         float distance = (point - origin).magnitude;
+        Debug.Log("Point: " + point + "; Origin: " + origin + ";");
         return (int)(distance * distance * falloffScale / rootArea);
     }
 
