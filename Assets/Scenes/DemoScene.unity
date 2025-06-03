@@ -29867,7 +29867,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2274584841730071781, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2274584841730071781, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -29907,7 +29907,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: islandFalloff
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.data[0].a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.data[0].b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.data[0].c
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.data[1].a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.data[1].b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: list.Array.data[1].c
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainBoundary.maxX
@@ -29916,6 +29944,118 @@ PrefabInstance:
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainBoundary.minX
       value: -250
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].noiseScale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[1].noiseScale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[2].noiseScale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[3].noiseScale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[4].noiseScale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[5].noiseScale
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].heightSteps
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[1].heightSteps
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[2].heightSteps
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[3].heightSteps
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[4].heightSteps
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[5].heightSteps
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[1].islandFalloff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[2].islandFalloff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[3].islandFalloff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[4].islandFalloff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[5].islandFalloff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].terrainGeneType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[1].terrainGeneType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[2].terrainGeneType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[3].terrainGeneType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[4].terrainGeneType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[5].terrainGeneType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].planeBounds.maxX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].planeBounds.maxZ
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].planeBounds.minX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
+      propertyPath: terrainGenes.Array.data[0].planeBounds.minZ
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

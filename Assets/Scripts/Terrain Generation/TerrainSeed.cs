@@ -25,14 +25,15 @@ public class TerrainSeed : MonoBehaviour
     [Header("Terrain Controls")]
     [SerializeField] private int seed;
     [SerializeField] private Bounds2DInt terrainBoundary;
-    [SerializeField] private float noiseScale = 0.1f;
-    [SerializeField] private int heightSteps = 10;
-    [SerializeField, Range(0f, 1f)] private float islandFalloff;
-    [SerializeField] private int heightBias; // TODO: programmatically calculate this based on the maximum vertex
-                                             // height along the boundaries (or approximate it using smallest distance
-                                             // to edge's midpoint and seeing what the falloff would be there)
-    [SerializeField] private bool isIsland = true; // control whether or not this is an island before generation 
-    private int offset;
+
+    public List<TerrainGene> terrainGenes;
+
+    // [SerializeField] private float noiseScale = 0.1f;
+    private int offset; // noise offset
+    // [SerializeField] private int heightSteps = 10;
+    // [SerializeField, Range(0f, 1f)] private float islandFalloff;
+    // [SerializeField] private int heightBias;
+    // [SerializeField] private bool isIsland = true; // control whether or not this is an island before generation 
 
 
     // To visualize the mesh values
@@ -40,6 +41,15 @@ public class TerrainSeed : MonoBehaviour
     [SerializeField] private Vector3[] vertexArray;
     [SerializeField] private int[] triangleArray;
     [SerializeField] private Vector3[] normalArray;
+
+    // Generation Enums
+    public enum GeneType
+    {
+        none,
+        noise,
+        plane,
+        island
+    }
 
     void Start()
     {
@@ -65,10 +75,9 @@ public class TerrainSeed : MonoBehaviour
 
         InitializeVertexGrid();
 
-        // apply falloff if it is an island (very much will be in most cases)
-        if (isIsland)
+        for (int currentGene = 0; currentGene < terrainGenes.Count; currentGene++)
         {
-            ApplyFalloff(islandFalloff);
+            EvaluateGene(terrainGenes[currentGene]);
         }
 
         InitializeTriangleArray();
@@ -93,6 +102,8 @@ public class TerrainSeed : MonoBehaviour
         meshCollider.sharedMesh = meshFilter.mesh;
     }
 
+    #region > INITIALIZATION
+
     private void UpdateSizeProperties()
     {
         width = terrainBoundary.Size.x + 1;
@@ -109,42 +120,9 @@ public class TerrainSeed : MonoBehaviour
         {
             for (int xCol = 0; xCol <= width - 1; xCol++)
             {
-                Vector3Int voxelVertex = GenerateVertex(xCol, zRow);
-                vertexList.Add(voxelVertex);
+                vertexList.Add(new Vector3(xCol - width / 2, transform.position.y, zRow - depth / 2));
             }
         }
-    }
-
-    private Vector3Int GenerateVertex(int xPos, int zPos)
-    {
-        // first, convert from world to noise space
-        float xCoord = xPos * noiseScale + offset;
-        float zCoord = zPos * noiseScale + offset;
-
-        // get perlin value and scale it, remembering to floor it afterwards
-        float perlinValue = Mathf.PerlinNoise(xCoord, zCoord);
-        int newY = Mathf.FloorToInt(perlinValue * heightSteps + 1);
-
-        return new Vector3Int(xPos - width / 2, newY + heightBias, zPos - depth / 2);
-    }
-
-    private void ApplyFalloff(float islandFalloffScale)
-    {
-        for (int zRow = 0; zRow <= depth - 1; zRow++)
-        {
-            for (int xCol = 0; xCol <= width - 1; xCol++)
-            {
-                vertexList[zRow * width + xCol] -= new Vector3(0f, Falloff(xCol + (int)origin.x - (width / 2), zRow + (int)origin.y - (depth / 2), islandFalloffScale), 0f);
-            }
-        }
-    }
-
-    private int Falloff(int x, int z, float falloffScale)
-    {
-        Vector2 point = new Vector2Int(x, z);
-        float distance = (point - origin).magnitude;
-        Debug.Log("Point: " + point + "; Origin: " + origin + ";");
-        return (int)(distance * distance * falloffScale / rootArea);
     }
 
     private void InitializeTriangleArray()
@@ -170,6 +148,83 @@ public class TerrainSeed : MonoBehaviour
         triangleList.Add(k + width);     // B
         triangleList.Add(k + width + 1); // D
     }
+
+    #endregion > INITIALIZATION
+
+    private void EvaluateGene(TerrainGene gene)
+    {
+        switch (gene.terrainGeneType)
+        {
+            case GeneType.noise:
+                ApplyNoise(gene.noiseScale, gene.heightSteps);
+                break;
+            case GeneType.plane:
+                break;
+            case GeneType.island:
+                ApplyFalloff(gene.islandFalloff);
+                break;
+            case GeneType.none:
+            default:
+                break;
+        }
+    }
+
+    #region > NOISE
+
+    private void ApplyNoise(float noiseScale, int heightSteps)
+    {
+        for (int zRow = 0; zRow <= depth - 1; zRow++)
+        {
+            for (int xCol = 0; xCol <= width - 1; xCol++)
+            {
+                Vector3 curr = vertexList[zRow * width + xCol];
+                int newVertexElevation = GenerateNoiseAt(xCol, zRow, noiseScale, heightSteps);
+                vertexList[zRow * width + xCol] = new Vector3(curr.x, curr.y + newVertexElevation, curr.z);
+            }
+        }
+    }
+
+    private int GenerateNoiseAt(int xPos, int zPos, float noiseScale, int heightSteps)
+    {
+        // first, convert from world to noise space
+        float xCoord = xPos * noiseScale + offset;
+        float zCoord = zPos * noiseScale + offset;
+
+        // get perlin value and scale it, remembering to floor it afterwards
+        float perlinValue = Mathf.PerlinNoise(xCoord, zCoord);
+        int newY = Mathf.FloorToInt(perlinValue * heightSteps + 1);
+
+        return newY;
+    }
+
+    #endregion > NOISE
+
+    #region > ISLAND
+
+    private void ApplyFalloff(float islandFalloffScale)
+    {
+        for (int zRow = 0; zRow <= depth - 1; zRow++)
+        {
+            for (int xCol = 0; xCol <= width - 1; xCol++)
+            {
+                vertexList[zRow * width + xCol] -= new Vector3(0f, Falloff(xCol + (int)origin.x - (width / 2), zRow + (int)origin.y - (depth / 2), islandFalloffScale), 0f);
+            }
+        }
+    }
+
+    private int Falloff(int x, int z, float falloffScale)
+    {
+        Vector2 point = new Vector2Int(x, z);
+        float distance = (point - origin).magnitude;
+        Debug.Log("Point: " + point + "; Origin: " + origin + ";");
+        return (int)(distance * distance * falloffScale / rootArea);
+    }
+
+    #endregion > ISLAND
+
+    #region > PLANE
+    // to be added...
+    #endregion > PLANE
 
     #endregion GENERATION
 
