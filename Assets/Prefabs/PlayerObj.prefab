@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 5290409149386845587}
   - component: {fileID: 4512951407493535850}
   - component: {fileID: 7448303903956844977}
+  - component: {fileID: 4805499864908669271}
+  - component: {fileID: 3000129860930329240}
   m_Layer: 0
   m_Name: PlayerObj
   m_TagString: Player
@@ -286,6 +288,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &4805499864908669271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165953148209847507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae414c5253df0543b467a37137ea7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3000129860930329240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165953148209847507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de5e773f356fdaa4885a9e909a91f4f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Health:
+    _currValue: 0
+    MaxValue: 0
 --- !u!1 &1148575444728820634
 GameObject:
   m_ObjectHideFlags: 0

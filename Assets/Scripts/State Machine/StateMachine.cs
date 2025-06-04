@@ -23,7 +23,7 @@ public class StateMachine : MonoBehaviour
             if (_currState != null)
                 return _currState;
             else
-                return Behavior.EmptyBehavior;
+                return null;
         }
     }
 
@@ -68,31 +68,43 @@ public class StateMachine : MonoBehaviour
             _behaviors[behavior.Name] = behavior;
 
         // Return the first behavior
-        return _myBehaviors[0];
+        try
+        {
+            return _myBehaviors[0];
+        }
+        catch (Exception e)
+        {
+            if (e is IndexOutOfRangeException)
+                Debug.LogWarning("No Behaviors on object; add at least one, or disable the state machine");
+            return null;
+        }
+        
     }
 
     #region Unity MonoBehavior methods
+    #pragma warning disable // need to disable the warnings because Unity is stupid and likes to complain when you use the tools it gives you
 
     void Start() => _currState = CacheBehaviors();
 
-    void OnEnable() => CurrState.Enter(this);
+    void OnEnable() => CurrState?.Enter(this);
 
-    void Update() => CurrState.Flex(this);
+    void Update() => CurrState?.Flex(this);
 
-    void FixedUpdate() => CurrState.FixedFlex(this);
+    void FixedUpdate() => CurrState?.FixedFlex(this);
 
-    void LateUpdate() => CurrState.LateFlex(this);
+    void LateUpdate() => CurrState?.LateFlex(this);
 
-    void OnCollisionEnter(Collision collision) => CurrState.OnCollision(this, collision);
+    void OnCollisionEnter(Collision collision) => CurrState?.OnCollision(this, collision);
 
-    void OnCollisionExit(Collision collision) => CurrState.OffCollision(this, collision);
+    void OnCollisionExit(Collision collision) => CurrState?.OffCollision(this, collision);
 
-    void OnTriggerEnter(Collider other) => CurrState.OnTrigger(this, other);
+    void OnTriggerEnter(Collider other) => CurrState?.OnTrigger(this, other);
 
-    void OnTriggerExit(Collider other) => CurrState.OffTrigger(this, other);
+    void OnTriggerExit(Collider other) => CurrState?.OffTrigger(this, other);
 
-    void OnDrawGizmos() => CurrState.DrawThing(this);
+    void OnDrawGizmosSelected() => CurrState?.DrawThing(this);
 
+    #pragma warning restore
     #endregion
 
     #region Switch State
