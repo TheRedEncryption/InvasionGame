@@ -6,12 +6,15 @@ using UnityEngine;
 public class Entity : MonoBehaviour
 {
     [SerializeField] private CappedFloat _health;
+    public CappedFloat Health => _health;
+
     [HideInInspector] public StateMachine _stateMachine;
     [HideInInspector] public Rigidbody _rb;
 
     [HideInInspector] public class HealthEventArgs : EventArgs
     {
         public int healthArg { get; set; }
+        public int maxHealthArg { get; set; }
     }
 
     [HideInInspector] public delegate void HealthChangedHandler(object source, HealthEventArgs e);
@@ -51,6 +54,6 @@ public class Entity : MonoBehaviour
     
     protected virtual void OnHealthChanged()
     {
-        HealthChanged?.Invoke(this, new HealthEventArgs { healthArg = (int)_health });
+        HealthChanged?.Invoke(this, new HealthEventArgs { healthArg = (int)_health, maxHealthArg = (int)_health.MaxValue });
     }
 }

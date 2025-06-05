@@ -28,7 +28,7 @@ public class HealthUIHandler : MonoBehaviour
         {
             if (healthLabel != null)
             {
-                healthLabel.text = $"{e.healthArg}/{PlayerEntity.Health.MaxValue}";
+                healthLabel.text = $"{e.healthArg}/{e.maxHealthArg}";
             }
             else
             {

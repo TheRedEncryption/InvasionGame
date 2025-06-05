@@ -332,8 +332,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _health:
-    _currValue: 0
-    MaxValue: 0
+    _currValue: 50
+    MaxValue: 100
   _stateMachine: {fileID: 0}
   _rb: {fileID: 0}
 --- !u!82 &2350051662604766622
