@@ -18,10 +18,14 @@ public class ProjectileSpawner : MonoBehaviour
     [Tooltip("The sound that'll play when an object is spawned.")]
     private AudioClip _sfx;
 
+    [SerializeField]
+    [Tooltip("The maximum scale of the pitch when the sound is played")]
+    private float _sfxScale;
+
     [Header("Properties")]
     [SerializeField]
     [Tooltip("The point to spawn the object at.")]
-    private Transform _spawnPoint;
+    protected Transform _spawnPoint;
 
     [SerializeField]
     [Tooltip("The velocity the object will spawn with.")]
@@ -67,19 +71,21 @@ public class ProjectileSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SpawnProjectile();
     }
 
     private float Rand(float max) => Random.Range(-max, max);
 
+    protected virtual Vector3 GetSpawnPoint() => _spawnPoint.position;
+    protected virtual Vector3 GetSpawnDir() => transform.forward;
+
     public virtual void SpawnProjectile()
     {
-
         // If this spawner is at max capacity, ignore the spawning
         if (!CanSpawnProjectile) return;
 
-        GameObject projectile = Instantiate(_projectile, _spawnPoint.position, Quaternion.identity, transform);
-        projectile.GetComponent<Projectile>().Initialize(GetSpread(transform.forward) * _spawnVelocity, _projectileLifeSpan);
+        GameObject projectile = Instantiate(_projectile, GetSpawnPoint(), Quaternion.identity, transform);
+        projectile.GetComponent<Projectile>().Initialize(GetSpread(GetSpawnDir()) * _spawnVelocity, _projectileLifeSpan);
+        GetComponent<AudioSource>().pitch = 1 + Rand(_sfxScale);
         GetComponent<AudioSource>().PlayOneShot(_sfx);
         GlobalProjectileCount++;
     }
