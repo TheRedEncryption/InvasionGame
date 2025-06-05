@@ -12,6 +12,7 @@ public class TerrainGene
     // "plane"
     public Bounds2DInt planeBounds;
     public int planeHeight;
+    public bool relativeToSeed;
 
     // "island"
     [Range(0f, 1f)] public float islandFalloff;
@@ -24,5 +25,6 @@ public class TerrainGene
         heightSteps = 10;
         planeHeight = 0;
         islandFalloff = 0.5f;
+        relativeToSeed = false;
     }
 }

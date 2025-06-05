@@ -46,6 +46,9 @@ public class TerrainGeneDrawer : PropertyDrawer
 
                     EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), property.FindPropertyRelative("planeHeight"));
                     y += lineSpace;
+
+                    EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), property.FindPropertyRelative("relativeToSeed"));
+                    y += lineSpace;
                     break;
 
                 case TerrainSeed.GeneType.island:
@@ -66,36 +69,35 @@ public class TerrainGeneDrawer : PropertyDrawer
         EditorGUI.EndProperty();
     }
 
+
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        float height = EditorGUIUtility.singleLineHeight;
+        float height = 0f;
 
-        if (property.isExpanded)
+        var geneTypeProp = property.FindPropertyRelative("terrainGeneType");
+        height += EditorGUI.GetPropertyHeight(geneTypeProp) + 2;
+
+        TerrainSeed.GeneType geneType = (TerrainSeed.GeneType)geneTypeProp.enumValueIndex;
+
+        switch (geneType)
         {
-            height += lineSpace; // terrainGeneType enum
+            case TerrainSeed.GeneType.noise:
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("noiseScale")) + 2;
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("heightSteps")) + 2;
+                break;
 
-            SerializedProperty typeProp = property.FindPropertyRelative("terrainGeneType");
-            switch ((TerrainSeed.GeneType)typeProp.enumValueIndex)
-            {
-                case TerrainSeed.GeneType.noise:
-                    height += 2 * (EditorGUIUtility.singleLineHeight + 2);
-                    break;
+            case TerrainSeed.GeneType.plane:
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("planeBounds")) + 2;
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("planeHeight")) + 2;
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("relativeToSeed")) + 2;
+                break;
 
-                case TerrainSeed.GeneType.plane:
-                    height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("planeBounds"), true) + 2;
-                    height += lineSpace;
-                    break;
-
-                case TerrainSeed.GeneType.island:
-                    height += lineSpace;
-                    break;
-
-                case TerrainSeed.GeneType.none:
-                default:
-                    height += lineSpace;
-                    break;
-            }
+            case TerrainSeed.GeneType.island:
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("islandFalloff")) + 2;
+                break;
         }
+
+        height += EditorGUI.GetPropertyHeight(geneTypeProp) + 2;
 
         return height;
     }
