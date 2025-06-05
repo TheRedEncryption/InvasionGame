@@ -153,8 +153,8 @@ MonoBehaviour:
   _coyotyeTime: 0.1
   _jumpCooldown: 0.25
   _slopeExchangeAngle: 45
-  _scanHeight: -0.25
-  groundedSphereRadius: 0.45
+  _scanHeight: -0.45
+  groundedSphereRadius: 0.48
   _orientation: {fileID: 2749713222072533021}
   slopeStateBufferFrames: 3
 --- !u!54 &7269119380531067430
@@ -315,9 +315,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de5e773f356fdaa4885a9e909a91f4f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health:
+  _health:
     _currValue: 0
     MaxValue: 0
+  _stateMachine: {fileID: 0}
+  _rb: {fileID: 0}
 --- !u!1 &1148575444728820634
 GameObject:
   m_ObjectHideFlags: 0
