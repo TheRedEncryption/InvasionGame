@@ -14,12 +14,13 @@ public class CappedFloat
         get => _currValue;
         set
         {
+            if (value == _currValue) ChangeFail?.Invoke();
+            else ChangeSuccessful?.Invoke();
 
             if (value <= 0)
             {
                 _currValue = 0;
                 OnEmpty?.Invoke();
-
             }
             else if (value >= MaxValue)
             {
@@ -54,6 +55,16 @@ public class CappedFloat
     /// The event that triggers whenever the current value is equal to <see cref="MaxValue"/>
     /// </summary>
     public event CappedFloatEvent OnMax;
+
+    /// <summary>
+    /// Called when there is a change to _currValue 
+    /// </summary>
+    public event CappedFloatEvent ChangeSuccessful;
+
+    /// <summary>
+    /// Called when the changed value is the same as the old value
+    /// </summary>
+    public event CappedFloatEvent ChangeFail;
 
     #endregion
 
@@ -93,6 +104,9 @@ public class CappedFloat
     /// </summary>
     public static CappedFloat operator --(CappedFloat a)
     { a.CurrValue = 0; return a; }
+
+    public static explicit operator int(CappedFloat a) => (int)a.CurrValue;
+    public static implicit operator float(CappedFloat a) => a.CurrValue;
 
     #endregion
 }
