@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerFPSMovement : MonoBehaviour
 {
@@ -16,6 +13,7 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _walkSpeed;
     public float _jumpSpeed;
     public float _moveSpeedError;
+    public bool _canMove = true;
 
     public float crouchOffset;
     public float cameraMoveSpeed;
@@ -315,7 +313,7 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void MovePlayerGround(Vector3 moveDirection)
     {
-        if((PlayerSlopeState == SlopeState.flat || PlayerSlopeState == SlopeState.minorSlope || PlayerSlopeState == SlopeState.steepSlope) && _readyToJump)
+        if((PlayerSlopeState == SlopeState.flat || PlayerSlopeState == SlopeState.minorSlope) && _readyToJump)
         {
             if(_rb.linearVelocity.y != 0)
             {
@@ -546,6 +544,7 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void TryMoveXY(Vector3 amount, ForceMode forceMode = ForceMode.VelocityChange)
     {
+        if (!_canMove) { return; }
         Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
         Vector3 amountVelX = new(amount.x, 0, amount.z);
         Vector3 amountOrigY = new Vector3(0, amount.y, 0);
@@ -599,12 +598,22 @@ public class PlayerFPSMovement : MonoBehaviour
 
         if (OnSteepGround)
         {
-            //_rb.AddForce(_slopeHit.normal * _jumpSpeed, ForceMode.VelocityChange);
+            Vector3 across = Vector3.Cross(_slopeHit.normal, Vector3.down).normalized;
+            Vector3 vecProjection = Vector3.Project(InputDir * MoveSpeed, across).normalized;
+            _canMove = false;
+            _jumpCooldown = 0.5f;
+            Invoke("ResetMovement", 0.15f);
+            _rb.AddForce(new Vector3(_slopeHit.normal.x, _slopeHit.normal.y * 0.5f, _slopeHit.normal.z) * _jumpSpeed + vecProjection, ForceMode.VelocityChange);
         }
         else
         {
             _rb.AddForce(transform.up * _jumpSpeed, ForceMode.VelocityChange);
         }
+    }
+
+    private void ResetMovement()
+    {
+        _canMove = true;
     }
 
     /// <summary>

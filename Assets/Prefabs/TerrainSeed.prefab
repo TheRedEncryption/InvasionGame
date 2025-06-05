@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6736182866630520286}
   - component: {fileID: 6485704828188763161}
   - component: {fileID: 813476772154883625}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TerrainSeed
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
