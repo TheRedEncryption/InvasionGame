@@ -603,7 +603,7 @@ public class PlayerFPSMovement : MonoBehaviour
             _canMove = false;
             _jumpCooldown = 0.5f;
             Invoke("ResetMovement", 0.15f);
-            _rb.AddForce(new Vector3(_slopeHit.normal.x, _slopeHit.normal.y * 0.5f, _slopeHit.normal.z) * _jumpSpeed + vecProjection, ForceMode.VelocityChange);
+            _rb.AddForce(new Vector3(_slopeHit.normal.x, 0.15f, _slopeHit.normal.z) * _jumpSpeed * 1.5f + vecProjection, ForceMode.VelocityChange);
         }
         else
         {

@@ -60737,7 +60737,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.data[0].noiseScale
@@ -60773,7 +60773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.data[2].heightSteps
-      value: 20
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.data[2].planeHeight
@@ -60873,11 +60873,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.data[2].planeBounds.minX
-      value: -100
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.data[2].planeBounds.minZ
-      value: -50
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 2331792790463555266, guid: fe5f3aad2c44b644d90e5b7e0f41d7a9, type: 3}
       propertyPath: terrainGenes.Array.data[3].planeBounds.maxX
