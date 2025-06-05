@@ -83,9 +83,6 @@ public class PlayerFPSMovement : MonoBehaviour
     public float groundedSphereRadius = 0.48f;
     public Transform _orientation;
 
-    public float slopeStateBufferFrames = 5f;
-
-
     RaycastHit _slopeHit;
     Rigidbody _rb;
 
@@ -96,8 +93,6 @@ public class PlayerFPSMovement : MonoBehaviour
     public enum SlopeState { flat = -2, minorSlope = -1, none = 0, steepSlope = 1, vertical = 2 }
     public PlayerMoveState MoveState { get; private set; }
     public SlopeState PlayerSlopeState { get; private set; }
-
-    private List<SlopeState> PreviousPlayerSlopeStates = new List<SlopeState>();
 
     // player slope state data helpers
     public bool OnLevelGround { get => PlayerSlopeState < 0; }
@@ -238,11 +233,6 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void StateHandler()
     {
-        PreviousPlayerSlopeStates.Add(PlayerSlopeState);
-        if (PreviousPlayerSlopeStates.Count > slopeStateBufferFrames)
-        {
-            PreviousPlayerSlopeStates.RemoveAt(0);
-        }
         PlayerSlopeState = OnSlope();
 
         PlayerMoveState previousMoveState = MoveState;
@@ -538,20 +528,6 @@ public class PlayerFPSMovement : MonoBehaviour
         Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
         Vector3 amountVelX = new(amount.x, 0, amount.z);
         Vector3 amountOrigY = new Vector3(0, amount.y, 0);
-        if (Grounded && _readyToJump && PreviousPlayerSlopeStates.Contains(SlopeState.minorSlope) && PlayerSlopeState == SlopeState.flat)
-        {
-            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
-            transform.position = new Vector3(transform.position.x, _slopeHit.point.y + transform.localScale.y, transform.position.z);
-        }
-        else if (Grounded && _readyToJump && PreviousPlayerSlopeStates.Contains(SlopeState.flat) && PlayerSlopeState == SlopeState.minorSlope)
-        {
-            Vector3 slopeNormal = _slopeHit.normal;
-            Vector3 projected = GetSlopeMoveDirection(_rb.linearVelocity);
-            // Remove the component of velocity along the slope's normal (y relative to slope)
-            float mag = _rb.linearVelocity.magnitude;
-            _rb.linearVelocity = projected * mag;
-            transform.position = new Vector3(transform.position.x, _slopeHit.point.y +transform.localScale.y, transform.position.z);
-        }
 
         if ((preVelocityX + amountVelX).magnitude > MoveSpeed && forceMode == ForceMode.VelocityChange)
         {
@@ -591,15 +567,6 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-        if(_isSliding)
-        {
-            // Stop sliding when jumping
-            _isSliding = false;
-            slideTime = 0f;
-            //_rb.AddForce(transform.up * _jumpSpeed, ForceMode.VelocityChange);
-            Debug.Log("Jumping from slide state, stopping slide.");
-            //return;
-        }
 
         if (_coyotyeTimeCurr > 0)
         {

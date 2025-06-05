@@ -153,10 +153,9 @@ MonoBehaviour:
   _coyotyeTime: 0.1
   _jumpCooldown: 0.25
   _slopeExchangeAngle: 45
-  _scanHeight: -0.45
+  _scanHeight: -0.4
   groundedSphereRadius: 0.48
   _orientation: {fileID: 2749713222072533021}
-  slopeStateBufferFrames: 3
 --- !u!54 &7269119380531067430
 Rigidbody:
   m_ObjectHideFlags: 0
