@@ -136,6 +136,7 @@ MonoBehaviour:
   _walkSpeed: 10
   _jumpSpeed: 6
   _moveSpeedError: 5
+  _canMove: 1
   crouchOffset: 0.5
   cameraMoveSpeed: 20
   _slideSpeed: 6
@@ -152,7 +153,7 @@ MonoBehaviour:
   _slowDrag: 15
   _coyotyeTime: 0.1
   _jumpCooldown: 0.25
-  _slopeExchangeAngle: 45
+  _slopeExchangeAngle: 30
   _scanHeight: -0.35
   groundedSphereRadius: 0.48
   _orientation: {fileID: 2749713222072533021}
