@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -29,12 +31,21 @@ public class Entity : MonoBehaviour
 
         _health.OnEmpty += OnDeath;
         _health.ChangeSuccessful += OnHealthChanged;
+        StartCoroutine(Damager());
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        
+    }
+    IEnumerator Damager()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(1f);
+            TakeDamage(5f);
+        }
     }
 
     public virtual void TakeDamage(float amount)
@@ -54,6 +65,7 @@ public class Entity : MonoBehaviour
     
     protected virtual void OnHealthChanged()
     {
+        Debug.Log("HEALTH CHANGED DIPSHIT: " + _health.CurrValue + "/" + _health.MaxValue);
         HealthChanged?.Invoke(this, new HealthEventArgs { healthArg = (int)_health, maxHealthArg = (int)_health.MaxValue });
     }
 }

@@ -1,6 +1,9 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="HealthBarBackground" style="flex-grow: 1; position: absolute; width: 250px; height: 70px; background-image: url(&quot;project://database/Assets/Assets/UI/hbb.png?fileID=2800000&amp;guid=3a3d88c34b82fc142950a8ee9aa139ed&amp;type=3#hbb&quot;); top: 22px; left: 20px;">
+    <Style src="project://database/Assets/Assets/UI/HealthUIStyle.uss?fileID=7433441132597879392&amp;guid=4f24ffac4c7c1b847903d79f42ae85d4&amp;type=3#HealthUIStyle" />
+    <ui:VisualElement name="HealthBarBackground" class="healthbar-size" style="flex-grow: 1; position: absolute; height: 75px; background-image: url(&quot;project://database/Assets/Assets/UI/HealthBarBackground.png?fileID=2800000&amp;guid=9020e551f749a0a408fa3a39b06524e2&amp;type=3#HealthBarBackground&quot;); top: 22px; left: 20px;">
+        <ui:VisualElement name="HealthBarMask" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; overflow: hidden; transition-property: width; transition-duration: 0.5s; transition-timing-function: ease-out-circ;">
+            <ui:VisualElement name="HealthBarFill" class="healthbar-size" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Assets/UI/HealthBarFill(alt2border).png?fileID=2800000&amp;guid=af4dc91dcc247a84fba319cc579f5a6d&amp;type=3#HealthBarFill(alt2border)&quot;); position: absolute; height: 100%; overflow: visible;" />
+        </ui:VisualElement>
         <ui:Label text="100/100" name="HealthLabel" style="position: absolute; width: 100%; height: 100%; font-size: 18px; -unity-font-definition: url(&quot;project://database/Assets/Assets/Fonts/PLANK___.TTF?fileID=12800000&amp;guid=74fcaf2aed128c447b7fff33f7481316&amp;type=3#PLANK___&quot;); -unity-text-align: middle-right; margin-top: 2px; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-bottom: 0; padding-left: 0; padding-right: 30px; padding-top: 0;" />
-        <ui:VisualElement name="HealthBarMask" style="flex-grow: 1;" />
     </ui:VisualElement>
 </ui:UXML>

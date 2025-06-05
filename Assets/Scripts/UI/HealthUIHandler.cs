@@ -7,6 +7,7 @@ public class HealthUIHandler : MonoBehaviour
     public UIDocument UIDoc;
     private VisualElement root;
     private Label healthLabel;
+    private VisualElement healthBarMask;
     private void Start()
     {
         if (PlayerEntity != null)
@@ -17,18 +18,21 @@ public class HealthUIHandler : MonoBehaviour
         {
             root = UIDoc.rootVisualElement;
             healthLabel = root.Q<Label>("HealthLabel");
+            healthBarMask = UIDoc.rootVisualElement.Q<VisualElement>("HealthBarMask");
         }
     }
 
     private void OnEntityHealthChanged(object sender, Entity.HealthEventArgs e)
     {
-        Debug.Log("Entity health changed! New health: " + e.healthArg);
         // Update your UI here
         if (UIDoc != null)
         {
             if (healthLabel != null)
             {
                 healthLabel.text = $"{e.healthArg}/{e.maxHealthArg}";
+                float healthRatio = (float)e.healthArg / e.maxHealthArg;
+                float healthPercent = Mathf.Lerp(19, 93, healthRatio);
+                healthBarMask.style.width = Length.Percent(healthPercent);
             }
             else
             {
@@ -43,6 +47,12 @@ public class HealthUIHandler : MonoBehaviour
 
     public void UpdateHealthUI()
     {
-        healthLabel.text = $"{PlayerEntity.Health.CurrValue}/{PlayerEntity.Health.MaxValue}";
+        var playerHealth = PlayerEntity.Health.CurrValue;
+        var playerMaxHealth = PlayerEntity.Health.MaxValue;
+        healthLabel.text = $"{playerHealth}/{playerMaxHealth}";
+        float healthRatio = (float)playerHealth / playerMaxHealth;
+        float healthPercent = Mathf.Lerp(19, 93, healthRatio);
+        healthBarMask.style.width = Length.Percent(healthPercent);
+        PlayerEntity.HealthChanged += OnEntityHealthChanged;
     }
 }

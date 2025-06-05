@@ -156,7 +156,7 @@ MonoBehaviour:
   _slowDrag: 15
   _coyotyeTime: 0.1
   _jumpCooldown: 0.25
-  _slopeExchangeAngle: 30
+  _slopeExchangeAngle: 40
   _scanHeight: -0.35
   groundedSphereRadius: 0.48
   _orientation: {fileID: 2749713222072533021}
