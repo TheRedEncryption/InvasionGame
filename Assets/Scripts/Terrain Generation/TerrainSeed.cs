@@ -159,6 +159,7 @@ public class TerrainSeed : MonoBehaviour
                 ApplyNoise(gene.noiseScale, gene.heightSteps);
                 break;
             case GeneType.plane:
+                ApplyPlane(gene.planeHeight, gene.planeBounds, gene.relativeToSeed);
                 break;
             case GeneType.island:
                 ApplyFalloff(gene.islandFalloff);
@@ -223,7 +224,29 @@ public class TerrainSeed : MonoBehaviour
     #endregion > ISLAND
 
     #region > PLANE
-    // to be added...
+
+    private void ApplyPlane(int planeElevation, Bounds2DInt planeBounds, bool isRelativeToSeed)
+    {
+        for (int zRow = 0; zRow <= depth - 1; zRow++)
+        {
+            for (int xCol = 0; xCol <= width - 1; xCol++)
+            {
+                Vector3 current = vertexList[zRow * width + xCol];
+                if (current.x >= planeBounds.minX && current.x <= planeBounds.maxX && current.z >= planeBounds.minZ && current.z <= planeBounds.maxZ)
+                {
+                    if (isRelativeToSeed)
+                    {
+                        vertexList[zRow * width + xCol] = new Vector3(current.x, current.y + planeElevation, current.z);
+                    }
+                    else
+                    {
+                        vertexList[zRow * width + xCol] = new Vector3(current.x, planeElevation, current.z);
+                    }
+                }
+            }
+        }
+    }
+
     #endregion > PLANE
 
     #endregion GENERATION
