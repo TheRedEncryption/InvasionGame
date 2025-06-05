@@ -22,8 +22,11 @@ public class PlayerFPSMovement : MonoBehaviour
 
     public float _slideSpeed;
     public float _defaultSlideTime;
+    public float _slopeSpeedModifier = 1f;
     private float slideTime = 5f;
-    private bool isSliding;
+    private bool _isSliding;
+    public float _uphillSlideModifier;
+    public float _downhillSlideModifier;
     private float _lastY;
     private int deltaYDirection; // -1, 0, 1 (Down, Neutral, Up)
 
@@ -41,6 +44,7 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             PlayerMoveState.walking => _walkSpeed,
             PlayerMoveState.slow => _slowSpeed,
+            PlayerMoveState.sliding => _slowSpeed,
             PlayerMoveState.air => _walkSpeed,
             _ => Mathf.Infinity,
         };
@@ -57,6 +61,7 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             PlayerMoveState.walking => _groundDrag,
             PlayerMoveState.slow => _slowDrag,
+            PlayerMoveState.sliding => _slowDrag,
             PlayerMoveState.air => _airDrag,
             _ => Mathf.Infinity,
         };
@@ -78,21 +83,16 @@ public class PlayerFPSMovement : MonoBehaviour
     public float groundedSphereRadius = 0.48f;
     public Transform _orientation;
 
-    public float slopeStateBufferFrames = 5f;
-
-
     RaycastHit _slopeHit;
     Rigidbody _rb;
 
     // *******************
     // -- Player state variables
     // *******************
-    public enum PlayerMoveState { slow, walking, air }
+    public enum PlayerMoveState { slow, walking, air, sliding }
     public enum SlopeState { flat = -2, minorSlope = -1, none = 0, steepSlope = 1, vertical = 2 }
     public PlayerMoveState MoveState { get; private set; }
     public SlopeState PlayerSlopeState { get; private set; }
-
-    private List<SlopeState> PreviousPlayerSlopeStates = new List<SlopeState>();
 
     // player slope state data helpers
     public bool OnLevelGround { get => PlayerSlopeState < 0; }
@@ -122,7 +122,7 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     void Update()
     {
-        deltaYDirection = _lastY < transform.position.y ? 1 : (_lastY > transform.position.y ? -1 : 0);
+        deltaYDirection = (_lastY < transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? 1 : ((_lastY > transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? -1 : 0);
         _lastY = transform.position.y;
 
         if (PlayerInputHandler.Instance.JumpDown)
@@ -148,6 +148,24 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         Grounded = Physics.SphereCast(transform.position, groundedSphereRadius, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
+        //Decrease slide time
+        if (_isSliding && MoveState == PlayerMoveState.air)
+        {
+            slideTime -= Time.deltaTime;
+            if(slideTime <= _defaultSlideTime)
+            {
+                _isSliding = false;
+            }
+        }
+        else if (PlayerMoveState.sliding != MoveState)
+        {
+            slideTime = 0f;
+        }
+        else if (_isSliding)
+            slideTime -= Time.deltaTime + deltaYDirection * (0.02f + Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f * 0.03f) * _slopeSpeedModifier;
+        if (slideTime <= 0f)
+            _isSliding = false;
+
         _rb.useGravity = !OnLevelGround;
         StateHandler();
 
@@ -164,6 +182,10 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             case PlayerMoveState.walking:
                 MovePlayerGround(moveDirection);
+                break;
+
+            case PlayerMoveState.sliding:
+                MovePlayerSlide(moveDirection);
                 break;
 
             case PlayerMoveState.slow:
@@ -211,16 +233,18 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void StateHandler()
     {
-        PreviousPlayerSlopeStates.Add(PlayerSlopeState);
-        if (PreviousPlayerSlopeStates.Count > slopeStateBufferFrames)
-        {
-            PreviousPlayerSlopeStates.RemoveAt(0);
-        }
         PlayerSlopeState = OnSlope();
 
+        PlayerMoveState previousMoveState = MoveState;
+
+        Vector3 planarVel = PlanarVector(_rb.linearVelocity);
         if (!Grounded)
         {
             MoveState = PlayerMoveState.air;
+        }
+        else if (PlayerInputHandler.Instance.CrouchDown && (planarVel.magnitude) > _slowSpeed-1f)
+        {
+            MoveState = PlayerMoveState.sliding;
         }
         else if (PlayerInputHandler.Instance.CrouchDown)
         {
@@ -229,6 +253,11 @@ public class PlayerFPSMovement : MonoBehaviour
         else
         {
             MoveState = PlayerMoveState.walking;
+        }
+
+        if(previousMoveState != MoveState)
+        {
+            Debug.Log($"Player move state changed from {previousMoveState} to {MoveState} with velocity {planarVel.magnitude}");
         }
 
         _rb.linearDamping = Drag;
@@ -308,27 +337,39 @@ public class PlayerFPSMovement : MonoBehaviour
         }
     }
 
+    private void MovePlayerSlide(Vector3 moveDirection)
+    {
+        if (!_isSliding)
+        {
+            slideTime = _defaultSlideTime;
+            _isSliding = true;
+        }
+        else
+        {
+            //Debug.Log(Vector3.Angle(Vector3.up, _slopeHit.normal));
+            float slopeEquation;
+            if (deltaYDirection == -1f)
+            {
+                slopeEquation = _slopeSpeedModifier * 0.1f * _downhillSlideModifier * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
+            }
+            else if (deltaYDirection == 1f)
+            {
+                slopeEquation = _slopeSpeedModifier * -0.1f * _uphillSlideModifier * Mathf.Pow(Vector3.Angle(Vector3.up, _slopeHit.normal) / 90f - 0, 2) + 1;
+            }
+            else
+            {
+                slopeEquation = 1f;
+            }
+            TryMoveXY(GetSlopeMoveDirection(moveDirection) * (_slideSpeed) * slideTime / _defaultSlideTime * slopeEquation, ForceMode.Impulse);
+            return;
+        }
+    }
+
     /// <summary>
     /// Handles player movement when crouching or sliding.
     /// </summary>
     private void MovePlayerSlow(Vector3 moveDirection)
     {
-        // Enter sliding
-        Vector3 planarVel = PlanarVector(_rb.linearVelocity);
-        if (!isSliding && (planarVel.magnitude) > 6f)
-        {
-            isSliding = true;
-            slideTime = _defaultSlideTime;
-        }
-
-        if (isSliding)
-        {
-            slideTime -= Time.deltaTime + deltaYDirection * 0.01f;
-            if (slideTime <= 0f) isSliding = false;
-            _rb.AddForce(moveDirection * (_slideSpeed) * slideTime/_defaultSlideTime, ForceMode.Impulse);
-            return;
-        }
-
         // First two check for ground conditions
         // Last two check for air conditions
         if (OnLevelGround) // If on a small slope
@@ -482,33 +523,19 @@ public class PlayerFPSMovement : MonoBehaviour
     /// <summary>
     /// Attempts to move the player in the XZ plane, applying speed limits and slope corrections.
     /// </summary>
-    private void TryMoveXY(Vector3 amount)
+    private void TryMoveXY(Vector3 amount, ForceMode forceMode = ForceMode.VelocityChange)
     {
         Vector3 preVelocityX = PlanarVector(_rb.linearVelocity);
         Vector3 amountVelX = new(amount.x, 0, amount.z);
         Vector3 amountOrigY = new Vector3(0, amount.y, 0);
-        if (Grounded && _readyToJump && PreviousPlayerSlopeStates.Contains(SlopeState.minorSlope) && PlayerSlopeState == SlopeState.flat)
-        {
-            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
-            transform.position = new Vector3(transform.position.x, _slopeHit.point.y + transform.localScale.y, transform.position.z);
-        }
-        else if (Grounded && _readyToJump && PreviousPlayerSlopeStates.Contains(SlopeState.flat) && PlayerSlopeState == SlopeState.minorSlope)
-        {
-            Vector3 slopeNormal = _slopeHit.normal;
-            Vector3 projected = GetSlopeMoveDirection(_rb.linearVelocity);
-            // Remove the component of velocity along the slope's normal (y relative to slope)
-            float mag = _rb.linearVelocity.magnitude;
-            _rb.linearVelocity = projected * mag;
-            transform.position = new Vector3(transform.position.x, _slopeHit.point.y +transform.localScale.y, transform.position.z);
-        }
 
-        if ((preVelocityX + amountVelX).magnitude > MoveSpeed)
+        if ((preVelocityX + amountVelX).magnitude > MoveSpeed && forceMode == ForceMode.VelocityChange)
         {
             Vector3 goalX = NormalizeToMoveSpeed(preVelocityX + amountVelX, preVelocityX.magnitude);
             amount = goalX - preVelocityX;
         }
 
-        _rb.AddForce(Grounded ? Vector3.ProjectOnPlane(amount, _slopeHit.normal) : amount, ForceMode.VelocityChange);
+        _rb.AddForce(Grounded ? Vector3.ProjectOnPlane(amount, _slopeHit.normal) : amount, forceMode);
     }
 
     /// <summary>
@@ -540,6 +567,7 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void Jump()
     {
+
         if (_coyotyeTimeCurr > 0)
         {
             _coyotyeTimeCurr = 0;
@@ -577,7 +605,7 @@ public class PlayerFPSMovement : MonoBehaviour
     {
         if (!PlayerInputHandler.Instance.CrouchDown)
         {
-            isSliding = false;
+            _isSliding = false;
             cameraPositionOnPlayer.localPosition = Vector3.Lerp(
                 cameraPositionOnPlayer.localPosition,
                 camStartLocalPos,
