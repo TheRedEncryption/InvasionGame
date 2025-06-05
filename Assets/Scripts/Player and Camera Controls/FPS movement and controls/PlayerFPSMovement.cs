@@ -346,6 +346,13 @@ public class PlayerFPSMovement : MonoBehaviour
 
     private void MovePlayerSlide(Vector3 moveDirection)
     {
+        if ((PlayerSlopeState == SlopeState.flat || PlayerSlopeState == SlopeState.minorSlope || PlayerSlopeState == SlopeState.steepSlope) && _readyToJump)
+        {
+            if (_rb.linearVelocity.y != 0)
+            {
+                _rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
+        }
         if (!_isSliding)
         {
             slideTime = _defaultSlideTime;
@@ -377,6 +384,13 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void MovePlayerSlow(Vector3 moveDirection)
     {
+        if ((PlayerSlopeState == SlopeState.flat || PlayerSlopeState == SlopeState.minorSlope || PlayerSlopeState == SlopeState.steepSlope) && _readyToJump)
+        {
+            if (_rb.linearVelocity.y != 0)
+            {
+                _rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
+        }
         // First two check for ground conditions
         // Last two check for air conditions
         if (OnLevelGround) // If on a small slope
