@@ -232,7 +232,8 @@ public class TerrainSeed : MonoBehaviour
             for (int xCol = 0; xCol <= width - 1; xCol++)
             {
                 Vector3 current = vertexList[zRow * width + xCol];
-                if (current.x >= planeBounds.minX && current.x <= planeBounds.maxX && current.z >= planeBounds.minZ && current.z <= planeBounds.maxZ)
+                Vector3 adjusted = current + transform.position;
+                if (adjusted.x >= planeBounds.minX && adjusted.x <= planeBounds.maxX && adjusted.z >= planeBounds.minZ && adjusted.z <= planeBounds.maxZ)
                 {
                     if (isRelativeToSeed)
                     {
