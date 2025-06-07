@@ -13029,9 +13029,9 @@ MonoBehaviour:
   _sfxScale: 0
   _spawnPoint: {fileID: 769870195}
   _spawnVelocity: 20
-  _projectileLifeSpan: 1
-  _vertical: 19.2
-  _horizontal: 8.7
+  _projectileLifeSpan: 8.77
+  _vertical: 12
+  _horizontal: 8.9
   _mode: 0
 --- !u!82 &296206834
 AudioSource:
@@ -29766,7 +29766,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &761243002
 Transform:
   m_ObjectHideFlags: 0
