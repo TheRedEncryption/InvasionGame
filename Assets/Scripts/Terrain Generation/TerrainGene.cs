@@ -23,7 +23,7 @@ public class TerrainGene
     // constructors
     public TerrainGene()
     {
-        terrainGeneType = TerrainSeed.GeneType.none;
+        terrainGeneType = TerrainSeed.GeneType.noise;
         noiseScale = 0.1f;
         heightSteps = 10;
         planeHeight = 0;

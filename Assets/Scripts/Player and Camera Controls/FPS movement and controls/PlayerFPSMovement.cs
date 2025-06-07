@@ -23,6 +23,8 @@ public class PlayerFPSMovement : MonoBehaviour
     public float _slopeSpeedModifier = 1f;
     private float slideTime = 5f;
     private bool _isSliding;
+    private float _slidingCooldown;
+    public float _maxSlideCooldown;
     public float _uphillSlideModifier;
     public float _downhillSlideModifier;
     private float _lastY;
@@ -170,6 +172,10 @@ public class PlayerFPSMovement : MonoBehaviour
         if (slideTime <= 0f)
             _isSliding = false;
 
+        // Slide cooldown reset
+        _slidingCooldown -= Time.deltaTime;
+        _slidingCooldown = Mathf.Max(_slidingCooldown, 0f);
+
         _rb.useGravity = !OnLevelGround;
         StateHandler();
 
@@ -246,7 +252,7 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             MoveState = PlayerMoveState.air;
         }
-        else if (PlayerInputHandler.Instance.CrouchDown && (planarVel.magnitude) > _slowSpeed-1f)
+        else if (PlayerInputHandler.Instance.CrouchDown && (planarVel.magnitude) > _slowSpeed-1f && _slidingCooldown <= 0)
         {
             MoveState = PlayerMoveState.sliding;
         }
@@ -258,8 +264,12 @@ public class PlayerFPSMovement : MonoBehaviour
         {
             MoveState = PlayerMoveState.walking;
         }
+        if(previousMoveState == PlayerMoveState.sliding && MoveState != PlayerMoveState.sliding)
+        {
+            _slidingCooldown = _maxSlideCooldown;
+        }
 
-        if(previousMoveState != MoveState)
+        if (previousMoveState != MoveState)
         {
             Debug.Log($"Player move state changed from {previousMoveState} to {MoveState} with velocity {planarVel.magnitude}");
         }
@@ -639,16 +649,7 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void CrouchHandle()
     {
-        if (!PlayerInputHandler.Instance.CrouchDown)
-        {
-            _isSliding = false;
-            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
-                cameraPositionOnPlayer.localPosition,
-                camStartLocalPos,
-                Time.deltaTime * cameraMoveSpeed
-            );
-        }
-        else
+        if (PlayerInputHandler.Instance.CrouchDown)
         {
             // decide target local position
             Vector3 target = camStartLocalPos + Vector3.down * crouchOffset;
@@ -656,6 +657,15 @@ public class PlayerFPSMovement : MonoBehaviour
             cameraPositionOnPlayer.localPosition = Vector3.Lerp(
                 cameraPositionOnPlayer.localPosition,
                 target,
+                Time.deltaTime * cameraMoveSpeed
+            );
+        }
+        else
+        {
+            _isSliding = false;
+            cameraPositionOnPlayer.localPosition = Vector3.Lerp(
+                cameraPositionOnPlayer.localPosition,
+                camStartLocalPos,
                 Time.deltaTime * cameraMoveSpeed
             );
         }

@@ -145,6 +145,7 @@ MonoBehaviour:
   _slideSpeed: 6
   _defaultSlideTime: 1.5
   _slopeSpeedModifier: 1
+  _maxSlideCooldown: 1.5
   _uphillSlideModifier: 0.5
   _downhillSlideModifier: 5
   cameraPositionOnPlayer: {fileID: 3568642833347042471}
