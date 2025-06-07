@@ -57,6 +57,10 @@ MonoBehaviour:
   vertexArray: []
   triangleArray: 
   normalArray: []
+  rockToSnow: 50
+  grassToRock: -30
+  sandCreepInland: -110
+  vertexCutoffTolerance: 1
 --- !u!33 &6736182866630520286
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -89,6 +93,9 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 64bc7cdeafd5b2544ab7abd182c5cbe8, type: 2}
+  - {fileID: 2100000, guid: 1946489eb0e577f4f8b3f886ac1d88a8, type: 2}
+  - {fileID: 2100000, guid: cd141e22ab2775449b9179be58b1109a, type: 2}
+  - {fileID: 2100000, guid: a25ce8d54b9923a41b1a593391cf59bb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

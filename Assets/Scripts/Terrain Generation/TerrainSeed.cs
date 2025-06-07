@@ -28,13 +28,7 @@ public class TerrainSeed : MonoBehaviour
 
     public List<TerrainGene> terrainGenes;
 
-    // [SerializeField] private float noiseScale = 0.1f;
     private int offset; // noise offset
-    // [SerializeField] private int heightSteps = 10;
-    // [SerializeField, Range(0f, 1f)] private float islandFalloff;
-    // [SerializeField] private int heightBias;
-    // [SerializeField] private bool isIsland = true; // control whether or not this is an island before generation 
-
 
     // To visualize the mesh values
     [Header("Mesh Value Visualization")]
@@ -50,6 +44,12 @@ public class TerrainSeed : MonoBehaviour
         plane,
         island
     }
+
+    // Material cutoff points
+    [SerializeField] private float rockToSnow = 50;
+    [SerializeField] private float grassToRock = 25;
+    [SerializeField] private float sandCreepInland = 10;
+    [SerializeField] private int vertexCutoffTolerance = 1; // dont change unless you wanna stupid
 
     void Start()
     {
@@ -89,6 +89,10 @@ public class TerrainSeed : MonoBehaviour
 
         mesh.vertices = vertexArray;
         mesh.triangles = triangleArray;
+
+        mesh.subMeshCount = 4;
+
+        CreateSubmeshes();
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
@@ -148,6 +152,7 @@ public class TerrainSeed : MonoBehaviour
 
     #endregion > INITIALIZATION
 
+    #region > GENETICS
     private void EvaluateAllGenes()
     {
         for (int zRow = 0; zRow <= depth - 1; zRow++)
@@ -180,6 +185,7 @@ public class TerrainSeed : MonoBehaviour
                 break;
         }
     }
+    #endregion > GENETICS
 
     #region > NOISE
 
@@ -243,6 +249,74 @@ public class TerrainSeed : MonoBehaviour
     }
 
     #endregion > PLANE
+
+    #region > MATERIALS
+    // Based on elevation, assign the four materials to the mesh (grass = 0, mountain rock = 1, snow caps = 2, sand = 3) and use Mesh.SetTriangles to assign submeshes.
+
+    private void CreateSubmeshes()
+    {
+        // Prepare lists for each submesh
+        List<int> sandTriangles = new List<int>();
+        List<int> grassTriangles = new List<int>();
+        List<int> rockTriangles = new List<int>();
+        List<int> snowTriangles = new List<int>();
+
+        // Find min and max elevation for normalization (optional, or use your cutoffs)
+        float minY = float.MaxValue, maxY = float.MinValue;
+        foreach (var v in mesh.vertices)
+        {
+            if (v.y < minY) minY = v.y;
+            if (v.y > maxY) maxY = v.y;
+        }
+
+        // Loop through triangles
+        for (int i = 0; i < triangleArray.Length; i += 3)
+        {
+            int i0 = triangleArray[i];
+            int i1 = triangleArray[i + 1];
+            int i2 = triangleArray[i + 2];
+
+            Vector3 v0 = mesh.vertices[i0];
+            Vector3 v1 = mesh.vertices[i1];
+            Vector3 v2 = mesh.vertices[i2];
+
+            // Assign to submesh based on elevation using TriangleBelowCutoff
+            if (TriangleBelowCutoff(v0, v1, v2, sandCreepInland))
+            {
+                sandTriangles.Add(i0); sandTriangles.Add(i1); sandTriangles.Add(i2);
+            }
+            else if (TriangleBelowCutoff(v0, v1, v2, grassToRock))
+            {
+                grassTriangles.Add(i0); grassTriangles.Add(i1); grassTriangles.Add(i2);
+            }
+            else if (TriangleBelowCutoff(v0, v1, v2, rockToSnow))
+            {
+                rockTriangles.Add(i0); rockTriangles.Add(i1); rockTriangles.Add(i2);
+            }
+            else
+            {
+                snowTriangles.Add(i0); snowTriangles.Add(i1); snowTriangles.Add(i2);
+            }
+        }
+
+        mesh.subMeshCount = 4;
+        mesh.SetTriangles(grassTriangles, 0);
+        mesh.SetTriangles(rockTriangles, 1);
+        mesh.SetTriangles(snowTriangles, 2);
+        mesh.SetTriangles(sandTriangles, 3);
+    }
+
+    private bool TriangleBelowCutoff(Vector3 v0, Vector3 v1, Vector3 v2, float cutoff)
+    {
+        int belowCount = 0;
+        if (v0.y < cutoff) belowCount++;
+        if (v1.y < cutoff) belowCount++;
+        if (v2.y < cutoff) belowCount++;
+
+        return belowCount >= vertexCutoffTolerance;
+    }
+
+    #endregion > MATERIALS
 
     #endregion GENERATION
 
