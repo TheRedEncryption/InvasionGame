@@ -217,7 +217,7 @@ public class TerrainSeed : MonoBehaviour
     {
         Vector2 point = new Vector2Int(x, z);
         float distance = (point - origin).magnitude;
-        Debug.Log("Point: " + point + "; Origin: " + origin + ";");
+        // Debug.Log("Point: " + point + "; Origin: " + origin + ";");
         return (int)(distance * distance * falloffScale / rootArea);
     }
 

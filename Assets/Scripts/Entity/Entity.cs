@@ -51,7 +51,7 @@ public class Entity : MonoBehaviour
 
     public virtual void OnDeath()
     {
-        
+        gameObject.SetActive(false);
     }
     
     protected virtual void OnHealthChanged()

@@ -17,6 +17,7 @@ public class DemoTurretShoot : ProjectileSpawner
     // Update is called once per frame
     void Update()
     {
+        GetComponent<Rigidbody>().AddTorque(Vector3.up * 0.001f, ForceMode.VelocityChange);
         _timer += Time.deltaTime;
     }
 

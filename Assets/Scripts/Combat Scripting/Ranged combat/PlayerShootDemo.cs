@@ -13,7 +13,7 @@ public class PlayerShootDemo : ProjectileSpawner
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(transform.position, CameraController.CameraForward * 10f, Color.red);
+        if (CameraController.Instance.currentCameraState != CameraController.CameraState.FirstPerson) return;
 
         if (PlayerInputHandler.Instance.AttackTriggered)
         {

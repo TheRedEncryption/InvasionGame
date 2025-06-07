@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    [Header("Input Actin Asset")]
+    [Header("Input Action Asset")]
     [SerializeField] private InputActionAsset playerControls;
 
     [Header("Deadzone Values")]
@@ -23,6 +25,38 @@ public class PlayerInputHandler : MonoBehaviour
         "Crouch",
         "SwitchCameraView"
     };
+
+    private class TapDetector
+    {
+        private bool _tapped = false;
+        private float _elaspedTime = 0f;
+
+        public bool Tapped
+        {
+            get
+            {
+                if (_tapped)
+                {
+                    _tapped = false;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public void PingStart()
+        {
+            _elaspedTime = 0;
+        }
+
+        public void PingEnd()
+        {
+
+        }
+    }
 
     // --- Input references ---
     // Raw data from input detection

@@ -11,7 +11,6 @@ public class Projectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(transform.forward);
     }
 
     public virtual void Initialize(Vector3 velocity, float lifeSpan, GameObject host)
@@ -26,9 +25,6 @@ public class Projectile : MonoBehaviour
         // Need to assign the rotation twice to remove stutter
         rb.MoveRotation(Quaternion.LookRotation(velocity.normalized));
         transform.forward = velocity.normalized;
-
-        Debug.Log(velocity.normalized + " -> " + transform.forward);
-        Debug.Log(transform.forward);
     }
 
     public virtual void Destroy()

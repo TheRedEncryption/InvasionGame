@@ -106,10 +106,12 @@ public class CameraController : MonoBehaviour
         if (currentCameraState == CameraState.TopDown)
         {
             SwitchToTopDown();
+            GetComponent<ObjectPlacer>().enabled = true;
         }
         else if (currentCameraState == CameraState.FirstPerson)
         {
             SwitchToFirstPerson();
+            GetComponent<ObjectPlacer>().enabled = false;   
         }
     }
 
@@ -160,9 +162,15 @@ public class CameraController : MonoBehaviour
         Vector3 targetLocation = new Vector3(transform.position.x, currentHeight, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetLocation, zoomSpeed * Time.deltaTime);
 
-        // WASD movement
+        // Input movement
         float heightSpeedScale = Mathf.Sqrt(currentHeight - minimumHeight + 1f);
-        Vector2 newPos = heightSpeedScale * planeMoveBaseSpeed * Time.deltaTime * PlayerInputHandler.Instance.MoveInput + new Vector2(transform.position.x, transform.position.z);
+        float shiftSpeedScale = PlayerInputHandler.Instance.CrouchDown && !PlayerInputHandler.Instance.AttackDown ? 3f : 1f;
+
+        // Click and drag or WASD
+        Vector2 inputVector = PlayerInputHandler.Instance.AttackDown ?
+            -PlayerInputHandler.Instance.LookInput / 2f : PlayerInputHandler.Instance.MoveInput;
+
+        Vector2 newPos = shiftSpeedScale * heightSpeedScale * planeMoveBaseSpeed * Time.deltaTime * inputVector + new Vector2(transform.position.x, transform.position.z);
 
         // Bounds
         float newX = Mathf.Clamp(newPos.x, boundary.minX, boundary.maxX);
@@ -175,10 +183,10 @@ public class CameraController : MonoBehaviour
 
     public void OnDrawGizmosSelected()
     {
-        Vector3 bottomLeft = new Vector3(boundary.minX, transform.position.y, boundary.minZ);
-        Vector3 bottomRight = new Vector3(boundary.maxX, transform.position.y, boundary.minZ);
-        Vector3 topLeft = new Vector3(boundary.minX, transform.position.y, boundary.maxZ);
-        Vector3 topRight = new Vector3(boundary.maxX, transform.position.y, boundary.maxZ);
+        Vector3 bottomLeft = new (boundary.minX, transform.position.y, boundary.minZ);
+        Vector3 bottomRight = new (boundary.maxX, transform.position.y, boundary.minZ);
+        Vector3 topLeft = new (boundary.minX, transform.position.y, boundary.maxZ);
+        Vector3 topRight = new (boundary.maxX, transform.position.y, boundary.maxZ);
 
         Gizmos.DrawLine(bottomLeft, bottomRight);
         Gizmos.DrawLine(bottomRight, topRight);

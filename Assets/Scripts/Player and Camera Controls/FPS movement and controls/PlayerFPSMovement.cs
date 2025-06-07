@@ -120,7 +120,7 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     void Update()
     {
-        //
+        //Debug.Log(CameraController.Instance.currentCameraState);
         if (CameraController.Instance.currentCameraState != CameraController.CameraState.FirstPerson) return;
 
         deltaYDirection = (_lastY < transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? 1 :
@@ -148,6 +148,8 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
+        if (CameraController.Instance.currentCameraState != CameraController.CameraState.FirstPerson) return;
+        
         Grounded = Physics.SphereCast(transform.position, groundedSphereRadius, Vector3.down, out _slopeHit, 1 + _scanHeight, 1 << 10);
 
         //Decrease slide time

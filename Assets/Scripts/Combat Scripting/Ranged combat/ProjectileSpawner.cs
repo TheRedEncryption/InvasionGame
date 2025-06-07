@@ -52,7 +52,7 @@ public class ProjectileSpawner : MonoBehaviour
     protected Vector3 _launchDirection;
 
     // --- Global projectile variables ---
-    public const int MAX_PROJECTILES = 128;
+    public const int MAX_PROJECTILES = 1 << 8;
     private static int _currProjectiles = 0;
     public static int GlobalProjectileCount
     {
