@@ -31,21 +31,12 @@ public class Entity : MonoBehaviour
 
         _health.OnEmpty += OnDeath;
         _health.ChangeSuccessful += OnHealthChanged;
-        StartCoroutine(Damager());
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
-    IEnumerator Damager()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(1f);
-            TakeDamage(5f);
-        }
     }
 
     public virtual void TakeDamage(float amount)
