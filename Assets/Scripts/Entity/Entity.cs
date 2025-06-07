@@ -65,7 +65,7 @@ public class Entity : MonoBehaviour
     
     protected virtual void OnHealthChanged()
     {
-        Debug.Log("HEALTH CHANGED DIPSHIT: " + _health.CurrValue + "/" + _health.MaxValue);
+        //Debug.Log("HEALTH CHANGED DIPSHIT: " + _health.CurrValue + "/" + _health.MaxValue);
         HealthChanged?.Invoke(this, new HealthEventArgs { healthArg = (int)_health, maxHealthArg = (int)_health.MaxValue });
     }
 }

@@ -84,7 +84,8 @@ public class ProjectileSpawner : MonoBehaviour
         if (!CanSpawnProjectile) return;
 
         GameObject projectile = Instantiate(_projectile, GetSpawnPoint(), Quaternion.identity, transform);
-        projectile.GetComponent<Projectile>().Initialize(GetSpread(GetSpawnDir()) * _spawnVelocity, _projectileLifeSpan);
+        projectile.GetComponent<Projectile>().Initialize(GetSpread(GetSpawnDir()) * _spawnVelocity, _projectileLifeSpan, gameObject);
+        
         GetComponent<AudioSource>().pitch = 1 + Rand(_sfxScale);
         GetComponent<AudioSource>().PlayOneShot(_sfx);
         GlobalProjectileCount++;

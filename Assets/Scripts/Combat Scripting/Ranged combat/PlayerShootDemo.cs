@@ -13,6 +13,8 @@ public class PlayerShootDemo : ProjectileSpawner
     // Update is called once per frame
     void Update()
     {
+        Debug.DrawRay(transform.position, CameraController.CameraForward * 10f, Color.red);
+
         if (PlayerInputHandler.Instance.AttackTriggered)
         {
             SpawnProjectile();
@@ -25,7 +27,7 @@ public class PlayerShootDemo : ProjectileSpawner
     }
     protected override Vector3 GetSpawnDir()
     {
-        return _cameraTransform.forward;
+        return CameraController.CameraForward;
     }
 
     public override void SpawnProjectile()

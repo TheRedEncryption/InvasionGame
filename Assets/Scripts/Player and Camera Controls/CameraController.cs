@@ -43,11 +43,33 @@ public class CameraController : MonoBehaviour
     private Vector2 lastInputEvent;
 
     // TODO: implement boundaries
+    public static Vector3 CameraForward { get; private set; }
+
+    #region Singleton implementation
+
+    public static CameraController Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            Debug.LogWarning("WARNING!: Additional camera object detected!");
+        }
+    }
+
+    #endregion
 
     void Start()
     {
         cam = Camera.main;
         SwitchCameraState(currentCameraState); // for testing purposes
+        CameraForward = Vector3.forward;
     }
 
     void Update()
@@ -127,6 +149,7 @@ public class CameraController : MonoBehaviour
         transform.SetPositionAndRotation(new Vector3(transform.position.x, currentHeight, transform.position.z), Quaternion.Euler(new Vector3(90f, 0f, 0f)));
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
+        CameraForward = new Vector3(90f, 0f, 0f);
     }
 
     private void HandleTopDown()
@@ -190,7 +213,8 @@ public class CameraController : MonoBehaviour
         rotation.y = Mathf.Clamp(rotation.y, -90f, 90f);
 
         // rotate cam and orientation
-        cam.transform.rotation = Quaternion.Euler(rotation.y, rotation.x, 0);
+        CameraForward = Quaternion.Euler(new Vector3(rotation.y, rotation.x, 0)) * Vector3.forward;
+        cam.transform.rotation = Quaternion.Euler(new Vector3(rotation.y, rotation.x, 0));
         _playerOrientation.transform.rotation = Quaternion.Euler(0, rotation.x, 0);
     }
 

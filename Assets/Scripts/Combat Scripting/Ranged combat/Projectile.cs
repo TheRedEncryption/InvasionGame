@@ -1,24 +1,34 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
-
+    public float _damage;
+    private GameObject _host;
     public delegate void HasBeenDestroyed();
     public event HasBeenDestroyed OnDestroy;
 
     // Update is called once per frame
     void Update()
     {
-
+        Debug.Log(transform.forward);
     }
 
-    public virtual void Initialize(Vector3 velocity, float lifeSpan)
+    public virtual void Initialize(Vector3 velocity, float lifeSpan, GameObject host)
     {
+        _host = host;
+
         Invoke(nameof(Destroy), lifeSpan);
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.linearVelocity = velocity;
+
+        // Need to assign the rotation twice to remove stutter
+        rb.MoveRotation(Quaternion.LookRotation(velocity.normalized));
         transform.forward = velocity.normalized;
-        GetComponent<Rigidbody>().linearVelocity = velocity;
+
+        Debug.Log(velocity.normalized + " -> " + transform.forward);
+        Debug.Log(transform.forward);
     }
 
     public virtual void Destroy()
@@ -27,5 +37,14 @@ public class Projectile : MonoBehaviour
         OnDestroy?.Invoke();
 
         Destroy(gameObject);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject == _host) return;
+
+        collision.gameObject.GetComponent<Entity>()?.TakeDamage(_damage);
+
+        Destroy();
     }
 }
