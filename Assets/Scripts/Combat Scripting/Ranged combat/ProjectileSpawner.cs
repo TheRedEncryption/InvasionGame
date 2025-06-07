@@ -71,6 +71,7 @@ public class ProjectileSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
     }
 
     private float Rand(float max) => Random.Range(-max, max);
@@ -153,6 +154,9 @@ public class ProjectileSpawner : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        //Debug.DrawRay(transform.position, transform.forward, Color.cyan);
+        for (int i = 0; i < 2000; i++)
+        {
+            Debug.DrawRay(transform.position, GetSpread(GetSpawnDir()), Color.white);
+        }
     }
 }

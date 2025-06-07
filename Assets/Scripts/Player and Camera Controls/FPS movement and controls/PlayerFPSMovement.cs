@@ -120,7 +120,11 @@ public class PlayerFPSMovement : MonoBehaviour
     /// </summary>
     void Update()
     {
-        deltaYDirection = (_lastY < transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? 1 : ((_lastY > transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? -1 : 0);
+        //
+        if (CameraController.Instance.currentCameraState != CameraController.CameraState.FirstPerson) return;
+
+        deltaYDirection = (_lastY < transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? 1 :
+        ((_lastY > transform.position.y && Mathf.Abs(_lastY - transform.position.y) > 0.01) ? -1 : 0);
         _lastY = transform.position.y;
 
         if (PlayerInputHandler.Instance.JumpDown)
