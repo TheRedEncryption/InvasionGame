@@ -15,7 +15,10 @@ public class TerrainGene
     public bool relativeToSeed;
 
     // "island"
-    [Range(0f, 1f)] public float islandFalloff;
+    /// <summary>
+    /// The falloff value for the island gene, which determines how quickly the terrain height decreases towards the edges of the island. Must be at least 0 and preferably capped at 1, but may be exceeded if desired for extreme effects.
+    /// </summary>
+    public float islandFalloff;
 
     // constructors
     public TerrainGene()

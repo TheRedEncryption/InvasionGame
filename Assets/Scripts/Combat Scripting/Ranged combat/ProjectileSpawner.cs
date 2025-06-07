@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 
 [RequireComponent(typeof(AudioSource))]
 public class ProjectileSpawner : MonoBehaviour
@@ -119,10 +120,26 @@ public class ProjectileSpawner : MonoBehaviour
         }
         else if (_mode == SpreadMode.Rectangle)
         {
-            // Box rotation matrix
-            x2 = x * cθ + y * sθ * sϕ + z * sθ * cϕ;
-            y2 = y * -cϕ + z * sϕ;
-            z2 = x * -sθ + y * cθ * sϕ + z * cθ * cϕ;
+            Vector3 direction = dir.normalized;
+            float length = dir.magnitude;
+
+            // Get two perpendicular vectors on the tangent plane
+            Vector3 right = Vector3.Cross(Vector3.up, direction);
+            if (right.sqrMagnitude < 1e-6f) right = Vector3.Cross(Vector3.forward, direction); // handle pole case
+            right.Normalize();
+
+            Vector3 up = Vector3.Cross(direction, right).normalized;
+
+            // Pick random point in tangent-plane rectangle
+            float h = Mathf.Tan(_horizontal * Mathf.Deg2Rad) * Random.Range(-1f, 1f);
+            float v = Mathf.Tan(_vertical * Mathf.Deg2Rad) * Random.Range(-1f, 1f);
+
+            Vector3 spreadDir = (direction + h * right + v * up).normalized * length;
+            return spreadDir;
+            //// Box rotation matrix
+            //x2 = x * cθ + y * sθ * sϕ + z * sθ * cϕ;
+            //y2 = y * -cϕ + z * sϕ;
+            //z2 = x * -sθ + y * cθ * sϕ + z * cθ * cϕ;
         }
         else
         {
