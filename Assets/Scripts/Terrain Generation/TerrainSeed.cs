@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Burst;
-using Unity.Jobs;
 using Unity.Collections;
+using Unity.Jobs;
 
 /// <summary>
 /// TerrainSeed is responsible for procedural terrain mesh generation using a gene-based system.
@@ -94,13 +94,85 @@ public class TerrainSeed : MonoBehaviour
         meshFilter.mesh.Clear();
         mesh = new Mesh();
 
-        InitializeVertexGrid();
+        // Prepare NativeArrays for job
+        int vertCount = Width * Depth;
+        NativeArray<Vector3> nativeVertices = new NativeArray<Vector3>(vertCount, Allocator.TempJob);
 
-        EvaluateAllGenes();
+        for (int zRow = 0; zRow < Depth; zRow++)
+        {
+            for (int xCol = 0; xCol < Width; xCol++)
+            {
+                nativeVertices[zRow * Width + xCol] = new Vector3(xCol - Width / 2, transform.position.y, zRow - Depth / 2);
+            }
+        }
 
+        // Prepare gene data for job
+        var geneDatas = new NativeArray<TerrainGeneData>(terrainGenes.Count, Allocator.TempJob);
+        var planeBounds = new NativeArray<Bounds2DInt>(terrainGenes.Count, Allocator.TempJob);
+        var planeHeights = new NativeArray<int>(terrainGenes.Count, Allocator.TempJob);
+        var planeRelatives = new NativeArray<bool>(terrainGenes.Count, Allocator.TempJob);
+        var planePlateaus = new NativeArray<bool>(terrainGenes.Count, Allocator.TempJob);
+        var noiseScales = new NativeArray<float>(terrainGenes.Count, Allocator.TempJob);
+        var noiseSteps = new NativeArray<int>(terrainGenes.Count, Allocator.TempJob);
+        var islandFalloffs = new NativeArray<float>(terrainGenes.Count, Allocator.TempJob);
+
+        for (int i = 0; i < terrainGenes.Count; i++)
+        {
+            var g = terrainGenes[i];
+            geneDatas[i] = new TerrainGeneData
+            {
+                terrainGeneType
+             = (int)g.terrainGeneType
+            };
+            planeBounds[i] = g.planeBounds;
+            planeHeights[i] = g.planeHeight;
+            planeRelatives[i] = g.relativeToSeed;
+            planePlateaus[i] = g.plateaus;
+            noiseScales[i] = g.noiseScale;
+            noiseSteps[i] = g.heightSteps;
+            islandFalloffs[i] = g.islandFalloff;
+        }
+
+        // Schedule job
+        var job = new TerrainGeneJob
+        {
+            Width = Width,
+            Depth = Depth,
+            Offset = offset,
+            RootArea = rootArea,
+            Origin = origin,
+            Genes = geneDatas,
+            PlaneBounds = planeBounds,
+            PlaneHeights = planeHeights,
+            PlaneRelatives = planeRelatives,
+            PlanePlateaus = planePlateaus,
+            NoiseScales = noiseScales,
+            NoiseSteps = noiseSteps,
+            IslandFalloffs = islandFalloffs,
+            Vertices = nativeVertices
+        };
+
+        JobHandle handle = job.Schedule(nativeVertices.Length, 64);
+        handle.Complete();
+
+        // Copy back to managed arrays/lists
+        vertexList.Clear();
+        for (int i = 0; i < nativeVertices.Length; i++)
+            vertexList.Add(nativeVertices[i]);
+
+        nativeVertices.Dispose();
+        geneDatas.Dispose();
+        planeBounds.Dispose();
+        planeHeights.Dispose();
+        planeRelatives.Dispose();
+        planePlateaus.Dispose();
+        noiseScales.Dispose();
+        noiseSteps.Dispose();
+        islandFalloffs.Dispose();
+
+        // Continue as before
         InitializeTriangleArray();
 
-        // Copy lists to arrays for mesh assignment
         vertexArray = new Vector3[vertexList.Count];
         mesh.vertices = new Vector3[vertexList.Count];
         vertexList.CopyTo(vertexArray);
@@ -419,4 +491,86 @@ public class TerrainSeed : MonoBehaviour
     }
 
     #endregion
+}
+
+// Burst-compatible job for terrain generation
+[BurstCompile]
+public struct TerrainGeneJob : IJobParallelFor
+{
+    public int Width;
+    public int Depth;
+    public float Offset;
+    public float RootArea;
+    public Vector2 Origin;
+
+    [ReadOnly] public NativeArray<TerrainGeneData> Genes;
+    [ReadOnly] public NativeArray<Bounds2DInt> PlaneBounds;
+    [ReadOnly] public NativeArray<int> PlaneHeights;
+    [ReadOnly] public NativeArray<bool> PlaneRelatives;
+    [ReadOnly] public NativeArray<bool> PlanePlateaus;
+    [ReadOnly] public NativeArray<float> NoiseScales;
+    [ReadOnly] public NativeArray<int> NoiseSteps;
+    [ReadOnly] public NativeArray<float> IslandFalloffs;
+
+    public NativeArray<Vector3> Vertices;
+
+    public void Execute(int index)
+    {
+        int zRow = index / Width;
+        int xCol = index % Width;
+        Vector3 curr = Vertices[index];
+
+        for (int g = 0; g < Genes.Length; g++)
+        {
+            switch (Genes[g].terrainGeneType)
+            {
+                case 1: // noise
+                    {
+                        float xCoord = xCol * NoiseScales[g] + Offset;
+                        float zCoord = zRow * NoiseScales[g] + Offset;
+                        float perlinValue = Mathf.PerlinNoise(xCoord, zCoord);
+                        int newY = Mathf.FloorToInt(perlinValue * NoiseSteps[g] + 1);
+                        curr.y += newY;
+                    }
+                    break;
+                case 2: // plane
+                    {
+                        var bounds = PlaneBounds[g];
+                        int planeElevation = PlaneHeights[g];
+                        bool isRelative = PlaneRelatives[g];
+                        bool plateaus = PlanePlateaus[g];
+
+                        if (plateaus)
+                        {
+                            if (isRelative)
+                            {
+                                if (curr.y <= planeElevation)
+                                    continue;
+                            }
+                            else
+                            {
+                                if (curr.y <= planeElevation)
+                                    continue;
+                            }
+                        }
+                        if (curr.x >= bounds.minX && curr.x <= bounds.maxX && curr.z >= bounds.minZ && curr.z <= bounds.maxZ)
+                        {
+                            curr.y = planeElevation;
+                        }
+                    }
+                    break;
+                case 3: // island
+                    {
+                        Vector2 point = new Vector2(xCol, zRow);
+                        float distance = (point - Origin).magnitude;
+                        int falloff = (int)(distance * distance * IslandFalloffs[g] / RootArea);
+                        curr.y -= falloff;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        Vertices[index] = curr;
+    }
 }

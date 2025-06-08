@@ -1,9 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
-#endif
 using UnityEngine;
 
-#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(Bounds2DInt))]
 public class Bounds2DIntDrawer : PropertyDrawer
 {
@@ -18,8 +16,11 @@ public class Bounds2DIntDrawer : PropertyDrawer
         float spacing = 2f;
 
         EditorGUI.BeginProperty(position, label, property);
+
+        // Draw label
         position = EditorGUI.PrefixLabel(position, label);
 
+        // Split line into four columns: Label1, Field1, Label2, Field2
         float labelWidth = 45f;
         float fieldWidth = (position.width - 2 * labelWidth - 10f) / 2;
 
@@ -29,6 +30,7 @@ public class Bounds2DIntDrawer : PropertyDrawer
         // --- X Row ---
         Rect minXLabel = new Rect(row1.x, row1.y, labelWidth, lineHeight);
         Rect minXField = new Rect(minXLabel.xMax + 2, row1.y, fieldWidth, lineHeight);
+
         Rect maxXLabel = new Rect(minXField.xMax + 6, row1.y, labelWidth, lineHeight);
         Rect maxXField = new Rect(maxXLabel.xMax + 2, row1.y, fieldWidth, lineHeight);
 
@@ -41,6 +43,7 @@ public class Bounds2DIntDrawer : PropertyDrawer
         // --- Z Row ---
         Rect minZLabel = new Rect(row2.x, row2.y, labelWidth, lineHeight);
         Rect minZField = new Rect(minZLabel.xMax + 2, row2.y, fieldWidth, lineHeight);
+
         Rect maxZLabel = new Rect(minZField.xMax + 6, row2.y, labelWidth, lineHeight);
         Rect maxZField = new Rect(maxZLabel.xMax + 2, row2.y, fieldWidth, lineHeight);
 
