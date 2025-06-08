@@ -49,6 +49,9 @@ public class TerrainGeneDrawer : PropertyDrawer
 
                     EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), property.FindPropertyRelative("relativeToSeed"));
                     y += lineSpace;
+
+                    EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), property.FindPropertyRelative("plateaus"));
+                    y += lineSpace;
                     break;
 
                 case TerrainSeed.GeneType.island:
@@ -92,6 +95,7 @@ public class TerrainGeneDrawer : PropertyDrawer
                     height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("planeBounds")) + 2;
                     height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("planeHeight")) + 2;
                     height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("relativeToSeed")) + 2;
+                    height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("plateaus")) + 2;
                     break;
 
                 case TerrainSeed.GeneType.island:

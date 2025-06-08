@@ -61575,36 +61575,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   reticleParts:
-  - radius: 3
-    innerRadius: 0
-    fill: 1
-    sweepAngle: 360
-    startDeg: 0
-    circleColor: {r: 1, g: 1, b: 1, a: 1}
-  - radius: 18
-    innerRadius: 13
-    fill: 0
-    sweepAngle: 135
-    startDeg: 135
-    circleColor: {r: 1, g: 1, b: 1, a: 1}
-  - radius: 18
-    innerRadius: 13
-    fill: 0
-    sweepAngle: 135
-    startDeg: 315
-    circleColor: {r: 1, g: 1, b: 1, a: 1}
-  - radius: 16
-    innerRadius: 12
-    fill: 0
-    sweepAngle: 135
-    startDeg: 135
-    circleColor: {r: 0.26966885, g: 0.8490566, b: 0.54574174, a: 1}
-  - radius: 16
-    innerRadius: 12
-    fill: 0
-    sweepAngle: 135
-    startDeg: 315
-    circleColor: {r: 0.8509804, g: 0.6507643, b: 0.2705883, a: 1}
+  - rid: 3799316434368856131
+  references:
+    version: 2
+    RefIds:
+    - rid: 3799316434368856131
+      type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
+      data:
+        radius: 3
+        innerRadius: 40
+        fill: 1
+        sweepAngle: 360
+        startDeg: 0
+        circleColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!43 &2107616373
 Mesh:
   m_ObjectHideFlags: 0
