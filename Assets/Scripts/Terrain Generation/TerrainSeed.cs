@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Burst;
+using Unity.Jobs;
+using Unity.Collections;
 
 /// <summary>
 /// TerrainSeed is responsible for procedural terrain mesh generation using a gene-based system.
@@ -19,8 +22,13 @@ public class TerrainSeed : MonoBehaviour
     private List<int> triangleList = new List<int>();       // List of mesh triangle indices
 
     // Width and depth of the plane to generate over
-    private int width;
-    private int depth;
+    public int Width { get; private set; }
+    public int Depth { get; private set; }
+
+    // Minimum and maximum heights for the terrain
+
+    // Vertical boundary bottom
+    [SerializeField] private float verticalBoundaryBottom = -50;
 
     private float rootArea;           // Used for falloff calculations
     private Vector2 origin;           // Center of the terrain
@@ -38,7 +46,6 @@ public class TerrainSeed : MonoBehaviour
     [Header("Mesh Value Visualization")]
     [SerializeField] private Vector3[] vertexArray;           // Array of mesh vertices
     [SerializeField] private int[] triangleArray;             // Array of mesh triangles
-    [SerializeField] private Vector3[] normalArray;           // Array of mesh normals
 
     // Generation Enums
     public enum GeneType
@@ -49,11 +56,15 @@ public class TerrainSeed : MonoBehaviour
         island
     }
 
+    [Header("Material Controls")]
+
     // Material cutoff points for submesh assignment
     [SerializeField] private float rockToSnow = 50;           // Elevation cutoff for snow
     [SerializeField] private float grassToRock = 25;          // Elevation cutoff for rock
     [SerializeField] private float sandCreepInland = 10;      // Elevation cutoff for sand
     [SerializeField] private int vertexCutoffTolerance = 1;   // Number of vertices below cutoff to assign triangle
+
+    [SerializeField, Range(0f, 1f)] private float percentHeightRockThreshold = 0.5f; // If any side of the triangle is longer than this percentage of the height of the terrain, then it will be assigned "rock" regardless of elevation.
 
     /// <summary>
     /// Initializes the terrain seed, sets up mesh filter, and generates the terrain mesh.
@@ -121,9 +132,9 @@ public class TerrainSeed : MonoBehaviour
     /// </summary>
     private void UpdateSizeProperties()
     {
-        width = terrainBoundary.Size.x + 1;
-        depth = terrainBoundary.Size.y + 1; // Y channel for Z values
-        rootArea = Mathf.Sqrt(width * depth);
+        Width = terrainBoundary.Size.x + 1;
+        Depth = terrainBoundary.Size.y + 1; // Y channel for Z values
+        rootArea = Mathf.Sqrt(Width * Depth);
         origin = new Vector2((terrainBoundary.maxX + terrainBoundary.minX) / 2, (terrainBoundary.maxZ + terrainBoundary.minZ) / 2);
     }
 
@@ -134,11 +145,11 @@ public class TerrainSeed : MonoBehaviour
     {
         vertexList.Clear(); // Ensure list is empty
 
-        for (int zRow = 0; zRow <= depth - 1; zRow++)
+        for (int zRow = 0; zRow <= Depth - 1; zRow++)
         {
-            for (int xCol = 0; xCol <= width - 1; xCol++)
+            for (int xCol = 0; xCol <= Width - 1; xCol++)
             {
-                vertexList.Add(new Vector3(xCol - width / 2, transform.position.y, zRow - depth / 2));
+                vertexList.Add(new Vector3(xCol - Width / 2, transform.position.y, zRow - Depth / 2));
             }
         }
     }
@@ -148,11 +159,11 @@ public class TerrainSeed : MonoBehaviour
     /// </summary>
     private void InitializeTriangleArray()
     {
-        for (int zRow = 0; zRow < depth - 1; zRow++)
+        for (int zRow = 0; zRow < Depth - 1; zRow++)
         {
-            for (int xCol = 0; xCol < width - 1; xCol++)
+            for (int xCol = 0; xCol < Width - 1; xCol++)
             {
-                int k = zRow * width + xCol;
+                int k = zRow * Width + xCol;
 
                 GenerateSingleSquare(k);
             }
@@ -165,12 +176,12 @@ public class TerrainSeed : MonoBehaviour
     private void GenerateSingleSquare(int k)
     {
         triangleList.Add(k);             // A
-        triangleList.Add(k + width);     // B
+        triangleList.Add(k + Width);     // B
         triangleList.Add(k + 1);         // C
 
         triangleList.Add(k + 1);         // C
-        triangleList.Add(k + width);     // B
-        triangleList.Add(k + width + 1); // D
+        triangleList.Add(k + Width);     // B
+        triangleList.Add(k + Width + 1); // D
     }
 
     #endregion > INITIALIZATION
@@ -182,9 +193,9 @@ public class TerrainSeed : MonoBehaviour
     /// </summary>
     private void EvaluateAllGenes()
     {
-        for (int zRow = 0; zRow <= depth - 1; zRow++)
+        for (int zRow = 0; zRow <= Depth - 1; zRow++)
         {
-            for (int xCol = 0; xCol <= width - 1; xCol++)
+            for (int xCol = 0; xCol <= Width - 1; xCol++)
             {
                 for (int currentGene = 0; currentGene < terrainGenes.Count; currentGene++)
                 {
@@ -205,7 +216,7 @@ public class TerrainSeed : MonoBehaviour
                 ApplyNoise(gene.noiseScale, gene.heightSteps, x, z);
                 break;
             case GeneType.plane:
-                ApplyPlane(gene.planeHeight, gene.planeBounds, gene.relativeToSeed, x, z);
+                ApplyPlane(gene.planeHeight, gene.planeBounds, gene.relativeToSeed, gene.plateaus, x, z);
                 break;
             case GeneType.island:
                 ApplyFalloff(gene.islandFalloff, x, z);
@@ -224,9 +235,9 @@ public class TerrainSeed : MonoBehaviour
     /// </summary>
     private void ApplyNoise(float noiseScale, int heightSteps, int zRow, int xCol)
     {
-        Vector3 curr = vertexList[zRow * width + xCol];
+        Vector3 curr = vertexList[zRow * Width + xCol];
         int newVertexElevation = GenerateNoiseAt(xCol, zRow, noiseScale, heightSteps);
-        vertexList[zRow * width + xCol] = new Vector3(curr.x, curr.y + newVertexElevation, curr.z);
+        vertexList[zRow * Width + xCol] = new Vector3(curr.x, curr.y + newVertexElevation, curr.z);
 
     }
 
@@ -255,7 +266,7 @@ public class TerrainSeed : MonoBehaviour
     /// </summary>
     private void ApplyFalloff(float islandFalloffScale, int zRow, int xCol)
     {
-        vertexList[zRow * width + xCol] -= new Vector3(0f, Falloff(xCol + (int)origin.x - (width / 2), zRow + (int)origin.y - (depth / 2), islandFalloffScale), 0f);
+        vertexList[zRow * Width + xCol] -= new Vector3(0f, Falloff(xCol + (int)origin.x - (Width / 2), zRow + (int)origin.y - (Depth / 2), islandFalloffScale), 0f);
     }
 
     /// <summary>
@@ -275,19 +286,38 @@ public class TerrainSeed : MonoBehaviour
     /// <summary>
     /// Applies a flat plane elevation to vertices within the specified bounds.
     /// </summary>
-    private void ApplyPlane(int planeElevation, Bounds2DInt planeBounds, bool isRelativeToSeed, int zRow, int xCol)
+    private void ApplyPlane(int planeElevation, Bounds2DInt planeBounds, bool isRelativeToSeed, bool plateaus, int zRow, int xCol)
     {
-        Vector3 current = vertexList[zRow * width + xCol];
+        Vector3 current = vertexList[zRow * Width + xCol];
         Vector3 adjusted = current + transform.position;
+
+        if (plateaus)
+        {
+            if (isRelativeToSeed)
+            {
+                if (current.y + transform.position.y <= planeElevation)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (current.y <= planeElevation)
+                {
+                    return;
+                }
+            }
+        }
+
         if (adjusted.x >= planeBounds.minX && adjusted.x <= planeBounds.maxX && adjusted.z >= planeBounds.minZ && adjusted.z <= planeBounds.maxZ)
         {
             if (isRelativeToSeed)
             {
-                vertexList[zRow * width + xCol] = new Vector3(current.x, current.y + planeElevation, current.z);
+                vertexList[zRow * Width + xCol] = new Vector3(current.x, planeElevation - transform.position.y, current.z);
             }
             else
             {
-                vertexList[zRow * width + xCol] = new Vector3(current.x, planeElevation, current.z);
+                vertexList[zRow * Width + xCol] = new Vector3(current.x, planeElevation, current.z);
             }
         }
     }
