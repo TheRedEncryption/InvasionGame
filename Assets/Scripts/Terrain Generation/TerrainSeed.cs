@@ -76,7 +76,7 @@ public class TerrainSeed : MonoBehaviour
 
         meshFilter = GetComponent<MeshFilter>();
 
-        GenerateTerrainMesh(); // For testing; should be called by map loading system in the future
+        // GenerateTerrainMesh(); // For testing; should be called by map loading system in the future
     }
 
     #region GENERATION
