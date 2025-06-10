@@ -10,6 +10,7 @@ public class GeneratedReticleUIEditor : Editor
 {
     private ReorderableList _list;
     private SerializedProperty _partsProp;
+    private ReticlePreset selectedPreset;
 
     private void OnEnable()
     {
@@ -63,6 +64,55 @@ public class GeneratedReticleUIEditor : Editor
     {
         serializedObject.Update();
         _list.DoLayoutList();
+
+        // --- NEW: Clear Reticle Button ---
+        if (GUILayout.Button("Clear Reticle"))
+        {
+            // Clear the list
+            _partsProp.ClearArray();
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Reticle Presets", EditorStyles.boldLabel);
+
+        selectedPreset = (ReticlePreset)EditorGUILayout.ObjectField("Preset Asset", selectedPreset, typeof(ReticlePreset), false);
+
+        using (new EditorGUI.DisabledScope(selectedPreset == null))
+        {
+            if (GUILayout.Button("Load from Preset"))
+            {
+                var reticleUI = (GeneratedReticleUI)target;
+                Undo.RecordObject(reticleUI, "Load Reticle Preset");
+                ReticlePresetUtility.LoadPreset(reticleUI, selectedPreset);
+                serializedObject.Update();
+                reticleUI.SetVerticesDirty();
+                EditorUtility.SetDirty(reticleUI);
+            }
+            if (GUILayout.Button("Save to Preset"))
+            {
+                if (selectedPreset != null)
+                {
+                    bool proceed = true;
+                    if (selectedPreset.reticleParts != null && selectedPreset.reticleParts.Count > 0)
+                    {
+                        proceed = EditorUtility.DisplayDialog(
+                            "Overwrite Preset?",
+                            "This preset already contains a reticle layout. Overwrite?",
+                            "Overwrite",
+                            "Cancel"
+                        );
+                    }
+                    if (proceed)
+                    {
+                        ReticlePresetUtility.SavePreset((GeneratedReticleUI)target, selectedPreset);
+                    }
+                }
+            }
+        }
+
         serializedObject.ApplyModifiedProperties();
     }
+
+
 }

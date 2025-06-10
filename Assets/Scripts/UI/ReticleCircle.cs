@@ -9,15 +9,10 @@ public class ReticleCircle : ReticlePart
     [Min(0)] public float innerRadius = 40f;
     public bool fill = true;
     [Range(0f, 360f)] public float sweepAngle = 360f;
-    public float startDeg = 0f;
+    [Range(0f, 360f)] float startDeg = 0f;
 
     [Header("Appearance")]
-    [SerializeField] private Color circleColor = Color.black;
-    public Color CircleColor
-    {
-        get => circleColor;
-        set => circleColor = value;
-    }
+    public Color circleColor = Color.black;
 
     // Default constructor to set any runtime defaults
     public ReticleCircle()

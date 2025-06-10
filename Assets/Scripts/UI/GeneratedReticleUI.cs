@@ -7,6 +7,15 @@ public class GeneratedReticleUI : MaskableGraphic
 {
     [SerializeReference]
     private List<ReticlePart> reticleParts = new List<ReticlePart>();
+    public List<ReticlePart> ReticleParts
+    {
+        get => reticleParts;
+        set
+        {
+            reticleParts = value;
+            SetVerticesDirty();
+        }
+    }
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
