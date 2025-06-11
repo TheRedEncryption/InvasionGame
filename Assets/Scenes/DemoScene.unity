@@ -61892,49 +61892,42 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   reticleParts:
-  - rid: 2838237782119547214
-  - rid: 2838237782119547215
-  - rid: 2838237782119547216
-  - rid: 2838237782119547217
+  - rid: 2838237782119547227
+  - rid: 2838237782119547228
+  - rid: 2838237782119547229
   references:
     version: 2
     RefIds:
-    - rid: 2838237782119547214
-      type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
-      data:
-        radius: 3
-        innerRadius: 1
-        fill: 1
-        sweepAngle: 360
-        circleColor: {r: 0.13979876, g: 0.12555626, b: 0.15566039, a: 1}
-    - rid: 2838237782119547215
+    - rid: 2838237782119547227
       type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
       data:
-        lineCount: 4
-        lineLength: 2
-        lineThickness: 3
-        distanceFromCenter: 5
-        lineColor: {r: 0, g: 0, b: 0, a: 1}
-        startAngle: 45
-        lineAngle: 0
-    - rid: 2838237782119547216
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 5
+        distanceFromCenter: 10
+        lineColor: {r: 1, g: 0, b: 0.12691164, a: 1}
+        startAngle: 90
+        lineAngle: 90
+    - rid: 2838237782119547228
       type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
       data:
-        lineCount: 4
-        lineLength: 4
-        lineThickness: 1
-        distanceFromCenter: 4
-        lineColor: {r: 0, g: 0, b: 0, a: 1}
-        startAngle: 0
+        lineCount: 1
+        lineLength: 30
+        lineThickness: 5
+        distanceFromCenter: 0
+        lineColor: {r: 0.13580775, g: 1, b: 0, a: 1}
+        startAngle: 120
         lineAngle: 0
-    - rid: 2838237782119547217
-      type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
+    - rid: 2838237782119547229
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
       data:
-        radius: 2
-        innerRadius: 1
-        fill: 1
-        sweepAngle: 360
-        circleColor: {r: 1, g: 1, b: 1, a: 1}
+        lineCount: 1
+        lineLength: 30
+        lineThickness: 5
+        distanceFromCenter: 0
+        lineColor: {r: 0, g: 0.06643605, b: 1, a: 1}
+        startAngle: 240
+        lineAngle: 0
 --- !u!43 &2107616373
 Mesh:
   m_ObjectHideFlags: 0

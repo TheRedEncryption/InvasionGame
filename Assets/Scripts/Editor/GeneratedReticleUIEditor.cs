@@ -92,7 +92,6 @@ public class GeneratedReticleUIEditor : Editor
         EditorGUILayout.LabelField("Reticle Presets", EditorStyles.boldLabel);
 
         // Display the currently selected preset for reference
-        //selectedPreset = (ReticlePreset)EditorGUILayout.ObjectField("Preset Asset", selectedPreset, typeof(ReticlePreset), false);
 
         // --- Load from Preset Picker ---
         if (GUILayout.Button("Load from Preset"))
