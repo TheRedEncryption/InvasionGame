@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: DotPlus
   m_EditorClassIdentifier: 
   reticleParts:
-  - rid: 2838237782119547113
-  - rid: 2838237782119547114
-  - rid: 2838237782119547115
+  - rid: 2838237782119547143
+  - rid: 2838237782119547144
+  - rid: 2838237782119547145
+  - rid: 2838237782119547146
   references:
     version: 2
     RefIds:
-    - rid: 2838237782119547113
+    - rid: 2838237782119547143
       type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
       data:
         radius: 3
@@ -27,7 +28,7 @@ MonoBehaviour:
         fill: 1
         sweepAngle: 360
         circleColor: {r: 0.13979876, g: 0.12555626, b: 0.15566039, a: 1}
-    - rid: 2838237782119547114
+    - rid: 2838237782119547144
       type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
       data:
         lineCount: 4
@@ -37,7 +38,7 @@ MonoBehaviour:
         lineColor: {r: 0, g: 0, b: 0, a: 1}
         startAngle: 45
         lineAngle: 0
-    - rid: 2838237782119547115
+    - rid: 2838237782119547145
       type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
       data:
         lineCount: 4
@@ -47,3 +48,11 @@ MonoBehaviour:
         lineColor: {r: 0, g: 0, b: 0, a: 1}
         startAngle: 0
         lineAngle: 0
+    - rid: 2838237782119547146
+      type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
+      data:
+        radius: 2
+        innerRadius: 1
+        fill: 1
+        sweepAngle: 360
+        circleColor: {r: 1, g: 1, b: 1, a: 1}
