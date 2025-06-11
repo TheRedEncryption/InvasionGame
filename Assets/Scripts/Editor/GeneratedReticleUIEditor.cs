@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Serialization;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -13,6 +12,10 @@ public class GeneratedReticleUIEditor : Editor
     private ReticlePreset selectedPreset;
     private string newPresetName = "New Reticle Preset";
     private string newPresetFolder = "Assets/Assets/UI";
+
+    // Unique control IDs for picker dialogs
+    private const int LoadPresetPickerID = 12345;
+    private const int SavePresetPickerID = 23456;
 
     private void OnEnable()
     {
@@ -67,51 +70,81 @@ public class GeneratedReticleUIEditor : Editor
         serializedObject.Update();
         _list.DoLayoutList();
 
-        // --- NEW: Clear Reticle Button ---
+        // --- Clear Reticle Button ---
         if (GUILayout.Button("Clear Reticle"))
         {
-            // Clear the list
-            _partsProp.ClearArray();
-            serializedObject.ApplyModifiedProperties();
+            if (EditorUtility.DisplayDialog(
+                    "Clear Reticle?",
+                    "Are you sure you want to remove all reticle elements?",
+                    "Clear",
+                    "Cancel"
+                ))
+            {
+                _partsProp.ClearArray();
+                serializedObject.ApplyModifiedProperties();
+                var reticleUI = (GeneratedReticleUI)target;
+                reticleUI.SetVerticesDirty();
+                EditorUtility.SetDirty(reticleUI);
+            }
         }
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Reticle Presets", EditorStyles.boldLabel);
 
-        selectedPreset = (ReticlePreset)EditorGUILayout.ObjectField("Preset Asset", selectedPreset, typeof(ReticlePreset), false);
+        // Display the currently selected preset for reference
+        //selectedPreset = (ReticlePreset)EditorGUILayout.ObjectField("Preset Asset", selectedPreset, typeof(ReticlePreset), false);
 
-        using (new EditorGUI.DisabledScope(selectedPreset == null))
+        // --- Load from Preset Picker ---
+        if (GUILayout.Button("Load from Preset"))
         {
-            if (GUILayout.Button("Load from Preset"))
+            EditorGUIUtility.ShowObjectPicker<ReticlePreset>(selectedPreset, false, "", LoadPresetPickerID);
+        }
+
+        // --- Save to Preset Picker ---
+        if (GUILayout.Button("Save to Preset"))
+        {
+            EditorGUIUtility.ShowObjectPicker<ReticlePreset>(selectedPreset, false, "", SavePresetPickerID);
+        }
+
+        // --- Handle Object Picker events ---
+        if (Event.current.commandName == "ObjectSelectorUpdated")
+        {
+            int controlID = EditorGUIUtility.GetObjectPickerControlID();
+            var pickedPreset = EditorGUIUtility.GetObjectPickerObject() as ReticlePreset;
+            if (controlID == LoadPresetPickerID && pickedPreset != null)
             {
+                selectedPreset = pickedPreset;
                 var reticleUI = (GeneratedReticleUI)target;
                 Undo.RecordObject(reticleUI, "Load Reticle Preset");
                 ReticlePresetUtility.LoadPreset(reticleUI, selectedPreset);
                 serializedObject.Update();
                 reticleUI.SetVerticesDirty();
                 EditorUtility.SetDirty(reticleUI);
+                Repaint();
             }
-            if (GUILayout.Button("Save to Preset"))
+            else if (controlID == SavePresetPickerID && pickedPreset != null)
             {
-                if (selectedPreset != null)
+                selectedPreset = pickedPreset;
+                bool proceed = true;
+                if (selectedPreset.reticleParts != null && selectedPreset.reticleParts.Count > 0)
                 {
-                    bool proceed = true;
-                    if (selectedPreset.reticleParts != null && selectedPreset.reticleParts.Count > 0)
-                    {
-                        proceed = EditorUtility.DisplayDialog(
-                            "Overwrite Preset?",
-                            "This preset already contains a reticle layout. Overwrite?",
-                            "Overwrite",
-                            "Cancel"
-                        );
-                    }
-                    if (proceed)
-                    {
-                        ReticlePresetUtility.SavePreset((GeneratedReticleUI)target, selectedPreset);
-                    }
+                    proceed = EditorUtility.DisplayDialog(
+                        "Overwrite Preset?",
+                        "This preset already contains a reticle layout. Overwrite?",
+                        "Overwrite",
+                        "Cancel"
+                    );
                 }
+                if (proceed)
+                {
+                    ReticlePresetUtility.SavePreset((GeneratedReticleUI)target, selectedPreset);
+                    EditorUtility.SetDirty(selectedPreset);
+                }
+                Repaint();
             }
         }
+
+        // --- Create New Preset Section ---
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Create New Preset", EditorStyles.boldLabel);
         newPresetName = EditorGUILayout.TextField("Preset Name", newPresetName);
@@ -135,6 +168,4 @@ public class GeneratedReticleUIEditor : Editor
 
         serializedObject.ApplyModifiedProperties();
     }
-
-
 }

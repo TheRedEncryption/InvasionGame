@@ -61892,12 +61892,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   reticleParts:
-  - rid: 2838237782119547148
-  - rid: 2838237782119547149
+  - rid: 2838237782119547214
+  - rid: 2838237782119547215
+  - rid: 2838237782119547216
+  - rid: 2838237782119547217
   references:
     version: 2
     RefIds:
-    - rid: 2838237782119547148
+    - rid: 2838237782119547214
       type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
       data:
         radius: 3
@@ -61905,7 +61907,27 @@ MonoBehaviour:
         fill: 1
         sweepAngle: 360
         circleColor: {r: 0.13979876, g: 0.12555626, b: 0.15566039, a: 1}
-    - rid: 2838237782119547149
+    - rid: 2838237782119547215
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 4
+        lineLength: 2
+        lineThickness: 3
+        distanceFromCenter: 5
+        lineColor: {r: 0, g: 0, b: 0, a: 1}
+        startAngle: 45
+        lineAngle: 0
+    - rid: 2838237782119547216
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 4
+        lineLength: 4
+        lineThickness: 1
+        distanceFromCenter: 4
+        lineColor: {r: 0, g: 0, b: 0, a: 1}
+        startAngle: 0
+        lineAngle: 0
+    - rid: 2838237782119547217
       type: {class: ReticleCircle, ns: , asm: Assembly-CSharp}
       data:
         radius: 2
