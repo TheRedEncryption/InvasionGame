@@ -11,6 +11,8 @@ public class GeneratedReticleUIEditor : Editor
     private ReorderableList _list;
     private SerializedProperty _partsProp;
     private ReticlePreset selectedPreset;
+    private string newPresetName = "New Reticle Preset";
+    private string newPresetFolder = "Assets/Assets/UI";
 
     private void OnEnable()
     {
@@ -109,6 +111,26 @@ public class GeneratedReticleUIEditor : Editor
                     }
                 }
             }
+        }
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Create New Preset", EditorStyles.boldLabel);
+        newPresetName = EditorGUILayout.TextField("Preset Name", newPresetName);
+        newPresetFolder = EditorGUILayout.TextField("Folder", newPresetFolder);
+
+        if (GUILayout.Button("Save As New Preset"))
+        {
+            string safeName = newPresetName.Trim();
+            if (string.IsNullOrEmpty(safeName)) safeName = "New Reticle Preset";
+            string path = AssetDatabase.GenerateUniqueAssetPath($"{newPresetFolder}/{safeName}.asset");
+
+            var newPreset = ScriptableObject.CreateInstance<ReticlePreset>();
+            ReticlePresetUtility.SavePreset((GeneratedReticleUI)target, newPreset);
+
+            AssetDatabase.CreateAsset(newPreset, path);
+            AssetDatabase.SaveAssets();
+            EditorUtility.FocusProjectWindow();
+            Selection.activeObject = newPreset;
+            selectedPreset = newPreset;
         }
 
         serializedObject.ApplyModifiedProperties();
