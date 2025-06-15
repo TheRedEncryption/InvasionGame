@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -28,12 +29,12 @@ public class Grid
         /// <summary>
         /// The offset of this point as an array of ints.
         /// </summary>
-        public int[] Offset => new int[] { X, Y, Z };
+        public readonly int[] Offset => new int[] { X, Y, Z };
 
         /// <summary>
         /// The offset of this point as a Vector3.
         /// </summary>
-        public Vector3 OffsetVector => new(X, Y, Z);
+        public readonly Vector3 OffsetVector => new(X, Y, Z);
 
         public Point(int x, int y, int z)
         {
@@ -42,10 +43,7 @@ public class Grid
             Z = z;
         }
 
-        public override string ToString()
-        {
-            return $"({X},{Y},{Z})";
-        }
+        public override readonly string ToString() => $"({X}, {Y}, {Z})"; 
 
         public static implicit operator Vector3(Point p) => new(p.X, p.Y, p.Z);
         public static explicit operator Point(Vector3 v) => new((int)v.x, (int)v.y, (int)v.z);
@@ -61,6 +59,9 @@ public class Grid
     /// </summary>
     [SerializeField] private Point _dimensions = new (1,1,1);
 
+    /// <summary>
+    /// The number of points along each axis.
+    /// </summary>
     public Point Dimensions
     {
         get => _dimensions;
@@ -74,9 +75,37 @@ public class Grid
         }
     }
 
-    [HideInInspector] [SerializeField] private Point[] _points;
+    /// <summary>
+    /// An array of the points in the grid.
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    private Point[] _points;
 
+    /*
+    /// <summary>
+    /// Describes a point in a grid
+    /// </summary>
+    public enum GridPointState
+    {
+        unoccupied,
+        occupied,
+        air
+    }
 
+    /// <summary>
+    /// A map of each point's state in the grid.
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    private Dictionary<Point, GridPointState> _pointStates;
+    */
+
+    /// <summary>
+    /// Get a vector from the origin to a point in the grid VIA direct index.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public Vector3 this[int index]
     {
         get
@@ -87,7 +116,7 @@ public class Grid
     }
 
     /// <summary>
-    /// Get a vector in the world based on a point in the grid.
+    /// Get a vector from the origin to a point in the grid.
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -114,8 +143,10 @@ public class Grid
         MakeGrid();
     }
 
-    public void MakeGrid()
+    public virtual void MakeGrid()
     {
+        //_pointStates = new();
+
         for (int i = 0; i < _dimensions.X; i++)
         {
             for (int j = 0; j < _dimensions.Y; j++)
