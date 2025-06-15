@@ -1,73 +1,135 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class Grid : MonoBehaviour
+[Serializable]
+public class Grid
 {
-    public class GridPoint
+    /// <summary>
+    /// A vector limited to only represent integers
+    /// </summary>
+    [Serializable]
+    public struct Point
     {
-        private List<GridPoint> _borderingPoints = new(4);
-        public GridPoint[] BorderingPoints => _borderingPoints.ToArray();
+        /// <summary>
+        /// The X component of this points offset
+        /// </summary>
+        public int X;
 
-        private Vector3 _position;
-        public Vector3 Position => _position;
+        /// <summary>
+        /// The Y component of this points offset
+        /// </summary>
+        public int Y;
 
-        public GridPoint(Vector3 position)
+        /// <summary>
+        /// The Z component of this points offset
+        /// </summary>
+        public int Z;
+
+        /// <summary>
+        /// The offset of this point as an array of ints.
+        /// </summary>
+        public int[] Offset => new int[] { X, Y, Z };
+
+        /// <summary>
+        /// The offset of this point as a Vector3.
+        /// </summary>
+        public Vector3 OffsetVector => new(X, Y, Z);
+
+        public Point(int x, int y, int z)
         {
-            _position = position;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
-        public void AddNeighbor(GridPoint p)
+        public override string ToString()
         {
-            _borderingPoints.Add(p);
+            return $"({X},{Y},{Z})";
+        }
+
+        public static implicit operator Vector3(Point p) => new(p.X, p.Y, p.Z);
+        public static explicit operator Point(Vector3 v) => new((int)v.x, (int)v.y, (int)v.z);
+    }
+    
+    /// <summary>
+    /// The dimensions of one "cube" in the grid
+    /// </summary>
+    [SerializeField] public Vector3 Scale = new (1,1,1);
+
+    /// <summary>
+    /// Dimensions of the overall grid.
+    /// </summary>
+    [SerializeField] private Point _dimensions = new (1,1,1);
+
+    public Point Dimensions
+    {
+        get => _dimensions;
+        set
+        {
+            _dimensions = value;
+            _points = new Point[_dimensions.X * _dimensions.Y * _dimensions.Z];
+            MakeGrid();
+
+            Debug.Log(NumPoints);
         }
     }
 
-    public class GridTile
+    [HideInInspector] [SerializeField] private Point[] _points;
+
+
+    public Vector3 this[int index]
     {
-        private bool _available;
-        private float _sideLength;
-        private int[] _relativePos = new int[3];
-        private GridPoint[] _quadPoints = new GridPoint[4];
-
-        public bool Available => _available;
-        public float SideLength => _sideLength;
-
-        /// <summary>
-        /// The X position in the grid
-        /// </summary>
-        public int RelX => _relativePos[0];
-
-        /// <summary>
-        /// The Y position in the grid
-        /// </summary>
-        public int RelY => _relativePos[1];
-
-        /// <summary>
-        /// The Z position in the grid
-        /// </summary>
-        public int RelZ => _relativePos[2];
-
-        /// <summary>
-        /// The position of the GridTile in the Grids array
-        /// </summary>
-        public Vector3 RelativePosition => new Vector3(RelX, RelY, RelZ);
-
-        /// <summary>
-        /// The position of this tile relative to the grid's (0,0,0)
-        /// </summary>
-        public Vector3 LocalWorldPosition => RelativePosition * SideLength;
-
+        get
+        {
+            Point p = _points[index];
+            return new Vector3(p.X * Scale.x, p.Y * Scale.y, p.Z * Scale.z);
+        }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    /// <summary>
+    /// Get a vector in the world based on a point in the grid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns>A Vector from </returns>
+    public Vector3 this[int x, int y, int z]
     {
-        
+        get
+        {
+            Point p = _points[x + _dimensions.X * (y + z * _dimensions.Y)];
+            return new Vector3(p.X * Scale.x, p.Y * Scale.y, p.Z * Scale.z);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public int NumPoints => _points.Length;
+
+    public Grid(Point dimensions, Vector3 scale)
     {
-        
+        _dimensions = dimensions;
+        Scale = scale;
+
+        _points = new Point[dimensions.X * dimensions.Y * dimensions.Z];
+
+        MakeGrid();
     }
+
+    public void MakeGrid()
+    {
+        for (int i = 0; i < _dimensions.X; i++)
+        {
+            for (int j = 0; j < _dimensions.Y; j++)
+            {
+                for (int k = 0; k < _dimensions.Z; k++)
+                {
+                    Point newPoint = new(i, j, k);
+
+                    SetPoint(i, j, k, newPoint);
+                }
+            }
+        }
+    }
+
+    private Point SetPoint(int x, int y, int z, Point newPoint) => _points[x + _dimensions.X * (y + z * _dimensions.Y)] = newPoint;
+    public void SetScale(Vector3 scale) => Scale = scale;
 }
