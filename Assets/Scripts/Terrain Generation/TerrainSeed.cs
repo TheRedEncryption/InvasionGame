@@ -28,10 +28,22 @@ public class TerrainSeed : MonoBehaviour
 
     // To control the terrain
     [Header("Terrain Controls")]
-    [SerializeField] private int seed;                        // Seed for randomization
+    public int seed;                        // Seed for randomization
     [SerializeField] private Bounds2DInt terrainBoundary;     // Terrain bounds
 
-    public List<TerrainGene> terrainGenes;                    // List of genes to apply
+    // Terrain Chromosomes (ScriptableObject lists of TerrainGenes)
+    private TerrainChromosome _terrainChromosome;
+    [SerializeField]
+    public TerrainChromosome terrainChromosome
+    {
+        get => _terrainChromosome;
+        set
+        {
+            _terrainChromosome = value;
+            terrainGenes = value.terrainGenes;
+        }
+    }
+    private List<TerrainGene> terrainGenes;                    // List of genes to apply
 
     private int offset; // Noise offset for Perlin noise
 
@@ -90,8 +102,13 @@ public class TerrainSeed : MonoBehaviour
         // Center the terrain object
         transform.position = new Vector3(origin.x, transform.position.y, origin.y);
 
-        meshFilter.mesh.Clear();
+        meshFilter.mesh.Clear(false);
         mesh = new Mesh();
+
+        // clear lists in case of re-generation
+        vertexList.Clear();
+        triangleList.Clear();
+        uvList.Clear();
 
         InitializeVertexGrid();
 
