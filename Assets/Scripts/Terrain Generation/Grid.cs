@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -43,10 +44,17 @@ public class Grid
             Z = z;
         }
 
-        public override readonly string ToString() => $"({X}, {Y}, {Z})"; 
+        public override readonly string ToString() => $"({X}, {Y}, {Z})";
+
+        public override readonly bool Equals(object obj) => (obj is Point point) && point == this;
+
+        public override readonly int GetHashCode() => base.GetHashCode();
 
         public static implicit operator Vector3(Point p) => new(p.X, p.Y, p.Z);
         public static explicit operator Point(Vector3 v) => new((int)v.x, (int)v.y, (int)v.z);
+
+        public static bool operator ==(Point left, Point right) => left.X == right.X && left.Y == right.Y && left.Z == right.Z;
+        public static bool operator !=(Point left, Point right) => !(left.X == right.X && left.Y == right.Y && left.Z == right.Z);
     }
     
     /// <summary>
@@ -57,7 +65,7 @@ public class Grid
     /// <summary>
     /// Dimensions of the overall grid.
     /// </summary>
-    [SerializeField] private Point _dimensions = new (1,1,1);
+    [SerializeField] protected Point _dimensions = new (1,1,1);
 
     /// <summary>
     /// The number of points along each axis.
@@ -67,11 +75,12 @@ public class Grid
         get => _dimensions;
         set
         {
-            _dimensions = value;
-            _points = new Point[_dimensions.X * _dimensions.Y * _dimensions.Z];
-            MakeGrid();
-
-            Debug.Log(NumPoints);
+            if (_dimensions != value)
+            {
+                _dimensions = value;
+                _points = new Point[_dimensions.X * _dimensions.Y * _dimensions.Z];
+                MakeGrid();
+            }
         }
     }
 
@@ -80,7 +89,7 @@ public class Grid
     /// </summary>
     [HideInInspector]
     [SerializeField]
-    private Point[] _points;
+    protected Point[] _points;
 
     /*
     /// <summary>
@@ -145,8 +154,6 @@ public class Grid
 
     public virtual void MakeGrid()
     {
-        //_pointStates = new();
-
         for (int i = 0; i < _dimensions.X; i++)
         {
             for (int j = 0; j < _dimensions.Y; j++)
@@ -161,6 +168,6 @@ public class Grid
         }
     }
 
-    private Point SetPoint(int x, int y, int z, Point newPoint) => _points[x + _dimensions.X * (y + z * _dimensions.Y)] = newPoint;
+    protected virtual Point SetPoint(int x, int y, int z, Point newPoint) => _points[x + _dimensions.X * (y + z * _dimensions.Y)] = newPoint;
     public void SetScale(Vector3 scale) => Scale = scale;
 }
