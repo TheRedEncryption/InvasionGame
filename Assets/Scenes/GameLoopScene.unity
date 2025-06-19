@@ -997,7 +997,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 468407257}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1653902981}
+        m_TargetAssemblyTypeName: BuildPhaseManager, Assembly-CSharp
+        m_MethodName: SetBuildPhaseEntity
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &468407257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1275,7 +1287,7 @@ Transform:
   m_GameObject: {fileID: 619495140}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1363,7 +1375,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 673967736}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1653902981}
+        m_TargetAssemblyTypeName: BuildPhaseManager, Assembly-CSharp
+        m_MethodName: SetBuildPhaseTool
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &673967736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1484,7 +1508,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 761711229}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1653902981}
+        m_TargetAssemblyTypeName: BuildPhaseManager, Assembly-CSharp
+        m_MethodName: SetBuildPhaseTool
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &761711229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1741,7 +1777,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 895619410}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1653902981}
+        m_TargetAssemblyTypeName: BuildPhaseManager, Assembly-CSharp
+        m_MethodName: SetBuildPhaseEntity
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &895619410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1862,7 +1910,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 947869566}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1653902981}
+        m_TargetAssemblyTypeName: BuildPhaseManager, Assembly-CSharp
+        m_MethodName: SetBuildPhaseEntity
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &947869566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2386,7 +2446,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1223869361}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1653902981}
+        m_TargetAssemblyTypeName: BuildPhaseManager, Assembly-CSharp
+        m_MethodName: SetBuildPhaseTool
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1223869361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3171,6 +3243,7 @@ GameObject:
   - component: {fileID: 1653902977}
   - component: {fileID: 1653902980}
   - component: {fileID: 1653902979}
+  - component: {fileID: 1653902981}
   m_Layer: 0
   m_Name: LocalGameManager
   m_TagString: Untagged
@@ -3278,6 +3351,20 @@ MonoBehaviour:
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
+--- !u!114 &1653902981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653902976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3872140d1b88bd34da75132d8d2d476d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTool: 0
+  currentEntity: 0
 --- !u!1 &1721026112
 GameObject:
   m_ObjectHideFlags: 0
@@ -4627,7 +4714,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 699859643688753308, guid: 0a84623ecfd9e6648b9a72ce4eaca517, type: 3}
       propertyPath: terrainPreset
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8221501845253505843, guid: 0a84623ecfd9e6648b9a72ce4eaca517, type: 3}
       propertyPath: m_LocalPosition.x

@@ -82,6 +82,7 @@ public class TerrainSeed : MonoBehaviour
     /// </summary>
     void Start()
     {
+        // TODO: fix seeding; it doesnt even do anything at the moment??
         UnityEngine.Random.InitState(seed); // Allows for reproducibility
         offset = UnityEngine.Random.Range(0, 65535); // Simulate seeding for noise
 
