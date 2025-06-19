@@ -1,6 +1,7 @@
 using System.Data;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class ObjectPlacer : MonoBehaviour
@@ -51,7 +52,7 @@ public class ObjectPlacer : MonoBehaviour
 
         Evaluation = Evaluate();
 
-        if (Evaluation && PlayerInputHandler.Instance.AttackTriggered)
+        if (Evaluation && PlayerInputHandler.Instance.AttackTriggered && !EventSystem.current.IsPointerOverGameObject())
         {
             _ = Instantiate(_selectedGameObject, _hit.point, Quaternion.identity);
         }

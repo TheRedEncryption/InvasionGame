@@ -106,12 +106,10 @@ public class CameraController : MonoBehaviour
         if (currentCameraState == CameraState.TopDown)
         {
             SwitchToTopDown();
-            GetComponent<ObjectPlacer>().enabled = true;
         }
         else if (currentCameraState == CameraState.FirstPerson)
         {
             SwitchToFirstPerson();
-            GetComponent<ObjectPlacer>().enabled = false;
         }
     }
 
@@ -152,6 +150,9 @@ public class CameraController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
         CameraForward = new Vector3(90f, 0f, 0f);
+
+        GetComponent<ObjectPlacer>().enabled = true;
+        FindFirstObjectByType<GeneratedReticleUI>().enabled = false;
     }
 
     private void HandleTopDown()
@@ -208,6 +209,9 @@ public class CameraController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        GetComponent<ObjectPlacer>().enabled = false;
+        FindFirstObjectByType<GeneratedReticleUI>().enabled = true;
     }
 
     private void HandleFirstPerson()
