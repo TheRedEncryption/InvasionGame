@@ -281,8 +281,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectile: {fileID: 8421463512802556806, guid: 964cd05a5b5375a45835024b90e2aec1, type: 3}
-  _sfx: {fileID: 0}
-  _sfxScale: 0
+  _sfx: {fileID: 8300000, guid: 5b4db4e979945034d9051cc862f9ad16, type: 3}
+  _sfxScale: 0.1
   _spawnPoint: {fileID: 0}
   _spawnVelocity: 25
   _projectileLifeSpan: 10
