@@ -111,7 +111,7 @@ public class CameraController : MonoBehaviour
         else if (currentCameraState == CameraState.FirstPerson)
         {
             SwitchToFirstPerson();
-            GetComponent<ObjectPlacer>().enabled = false;   
+            GetComponent<ObjectPlacer>().enabled = false;
         }
     }
 
@@ -183,10 +183,10 @@ public class CameraController : MonoBehaviour
 
     public void OnDrawGizmosSelected()
     {
-        Vector3 bottomLeft = new (boundary.minX, transform.position.y, boundary.minZ);
-        Vector3 bottomRight = new (boundary.maxX, transform.position.y, boundary.minZ);
-        Vector3 topLeft = new (boundary.minX, transform.position.y, boundary.maxZ);
-        Vector3 topRight = new (boundary.maxX, transform.position.y, boundary.maxZ);
+        Vector3 bottomLeft = new(boundary.minX, transform.position.y, boundary.minZ);
+        Vector3 bottomRight = new(boundary.maxX, transform.position.y, boundary.minZ);
+        Vector3 topLeft = new(boundary.minX, transform.position.y, boundary.maxZ);
+        Vector3 topRight = new(boundary.maxX, transform.position.y, boundary.maxZ);
 
         Gizmos.DrawLine(bottomLeft, bottomRight);
         Gizmos.DrawLine(bottomRight, topRight);
