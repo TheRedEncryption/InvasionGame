@@ -76,7 +76,7 @@ public class ObjectPlacer : MonoBehaviour
     void OnDisable()
     {
         if (_debugSphereInstance != null)
-            Destroy(_debugSphereInstance);
+            _debugSphereInstance.SetActive(false);
     }
 
     #region --- Handle collision bool ---
