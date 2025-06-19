@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Serialization;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -10,6 +9,13 @@ public class GeneratedReticleUIEditor : Editor
 {
     private ReorderableList _list;
     private SerializedProperty _partsProp;
+    private ReticlePreset selectedPreset;
+    private string newPresetName = "New Reticle Preset";
+    private string newPresetFolder = "Assets/Assets/UI";
+
+    // Unique control IDs for picker dialogs
+    private const int LoadPresetPickerID = 12345;
+    private const int SavePresetPickerID = 23456;
 
     private void OnEnable()
     {
@@ -63,6 +69,102 @@ public class GeneratedReticleUIEditor : Editor
     {
         serializedObject.Update();
         _list.DoLayoutList();
+
+        // --- Clear Reticle Button ---
+        if (GUILayout.Button("Clear Reticle"))
+        {
+            if (EditorUtility.DisplayDialog(
+                    "Clear Reticle?",
+                    "Are you sure you want to remove all reticle elements?",
+                    "Clear",
+                    "Cancel"
+                ))
+            {
+                _partsProp.ClearArray();
+                serializedObject.ApplyModifiedProperties();
+                var reticleUI = (GeneratedReticleUI)target;
+                reticleUI.SetVerticesDirty();
+                EditorUtility.SetDirty(reticleUI);
+            }
+        }
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Reticle Presets", EditorStyles.boldLabel);
+
+        // Display the currently selected preset for reference
+
+        // --- Load from Preset Picker ---
+        if (GUILayout.Button("Load from Preset"))
+        {
+            EditorGUIUtility.ShowObjectPicker<ReticlePreset>(selectedPreset, false, "", LoadPresetPickerID);
+        }
+
+        // --- Save to Preset Picker ---
+        if (GUILayout.Button("Save to Preset"))
+        {
+            EditorGUIUtility.ShowObjectPicker<ReticlePreset>(selectedPreset, false, "", SavePresetPickerID);
+        }
+
+        // --- Handle Object Picker events ---
+        if (Event.current.commandName == "ObjectSelectorUpdated")
+        {
+            int controlID = EditorGUIUtility.GetObjectPickerControlID();
+            var pickedPreset = EditorGUIUtility.GetObjectPickerObject() as ReticlePreset;
+            if (controlID == LoadPresetPickerID && pickedPreset != null)
+            {
+                selectedPreset = pickedPreset;
+                var reticleUI = (GeneratedReticleUI)target;
+                Undo.RecordObject(reticleUI, "Load Reticle Preset");
+                ReticlePresetUtility.LoadPreset(reticleUI, selectedPreset);
+                serializedObject.Update();
+                reticleUI.SetVerticesDirty();
+                EditorUtility.SetDirty(reticleUI);
+                Repaint();
+            }
+            else if (controlID == SavePresetPickerID && pickedPreset != null)
+            {
+                selectedPreset = pickedPreset;
+                bool proceed = true;
+                if (selectedPreset.reticleParts != null && selectedPreset.reticleParts.Count > 0)
+                {
+                    proceed = EditorUtility.DisplayDialog(
+                        "Overwrite Preset?",
+                        "This preset already contains a reticle layout. Overwrite?",
+                        "Overwrite",
+                        "Cancel"
+                    );
+                }
+                if (proceed)
+                {
+                    ReticlePresetUtility.SavePreset((GeneratedReticleUI)target, selectedPreset);
+                    EditorUtility.SetDirty(selectedPreset);
+                }
+                Repaint();
+            }
+        }
+
+        // --- Create New Preset Section ---
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Create New Preset", EditorStyles.boldLabel);
+        newPresetName = EditorGUILayout.TextField("Preset Name", newPresetName);
+        newPresetFolder = EditorGUILayout.TextField("Folder", newPresetFolder);
+
+        if (GUILayout.Button("Save As New Preset"))
+        {
+            string safeName = newPresetName.Trim();
+            if (string.IsNullOrEmpty(safeName)) safeName = "New Reticle Preset";
+            string path = AssetDatabase.GenerateUniqueAssetPath($"{newPresetFolder}/{safeName}.asset");
+
+            var newPreset = ScriptableObject.CreateInstance<ReticlePreset>();
+            ReticlePresetUtility.SavePreset((GeneratedReticleUI)target, newPreset);
+
+            AssetDatabase.CreateAsset(newPreset, path);
+            AssetDatabase.SaveAssets();
+            EditorUtility.FocusProjectWindow();
+            Selection.activeObject = newPreset;
+            selectedPreset = newPreset;
+        }
+
         serializedObject.ApplyModifiedProperties();
     }
 }

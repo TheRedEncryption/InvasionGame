@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 195b9a020cb11384e84aac99556f9b83, type: 3}
+  m_Name: AC130
+  m_EditorClassIdentifier: 
+  reticleParts:
+  - rid: 2838237782119546968
+  - rid: 2838237782119546969
+  - rid: 2838237782119546970
+  - rid: 2838237782119546971
+  - rid: 2838237782119546972
+  - rid: 2838237782119546973
+  - rid: 2838237782119546974
+  - rid: 2838237782119546975
+  references:
+    version: 2
+    RefIds:
+    - rid: 2838237782119546968
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 250
+        lineThickness: 4
+        distanceFromCenter: 20
+        lineColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
+        startAngle: 0
+        lineAngle: 0
+    - rid: 2838237782119546969
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 150
+        lineThickness: 4
+        distanceFromCenter: 20
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: 90
+        lineAngle: 0
+    - rid: 2838237782119546970
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 4
+        distanceFromCenter: 170
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: 90
+        lineAngle: 90
+    - rid: 2838237782119546971
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 4
+        distanceFromCenter: 270
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: 0
+        lineAngle: 90
+    - rid: 2838237782119546972
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 4
+        distanceFromCenter: 360
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: 33
+        lineAngle: 57
+    - rid: 2838237782119546973
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 4
+        distanceFromCenter: 356
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: 36
+        lineAngle: -38
+    - rid: 2838237782119546974
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 4
+        distanceFromCenter: 345
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: -37
+        lineAngle: 38
+    - rid: 2838237782119546975
+      type: {class: ReticleLineArray, ns: , asm: Assembly-CSharp}
+      data:
+        lineCount: 2
+        lineLength: 30
+        lineThickness: 4
+        distanceFromCenter: 348
+        lineColor: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 1}
+        startAngle: -33.92
+        lineAngle: 124

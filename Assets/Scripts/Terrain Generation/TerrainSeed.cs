@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Burst;
-using Unity.Jobs;
-using Unity.Collections;
 
 /// <summary>
 /// TerrainSeed is responsible for procedural terrain mesh generation using a gene-based system.
@@ -16,10 +13,6 @@ public class TerrainSeed : MonoBehaviour
     private MeshFilter meshFilter;    // Reference to the MeshFilter component
     private Mesh mesh;                // The generated mesh
     private MeshCollider meshCollider;// Reference to the MeshCollider component
-
-    // Lists for the vertices and triangles that will then be fed into the array
-    private List<Vector3> vertexList = new List<Vector3>(); // List of mesh vertices
-    private List<int> triangleList = new List<int>();       // List of mesh triangle indices
 
     // Width and depth of the plane to generate over
     public int Width { get; private set; }
@@ -35,17 +28,35 @@ public class TerrainSeed : MonoBehaviour
 
     // To control the terrain
     [Header("Terrain Controls")]
-    [SerializeField] private int seed;                        // Seed for randomization
+    public int seed;                        // Seed for randomization
     [SerializeField] private Bounds2DInt terrainBoundary;     // Terrain bounds
 
-    public List<TerrainGene> terrainGenes;                    // List of genes to apply
+    // Terrain Chromosomes (ScriptableObject lists of TerrainGenes)
+    private TerrainChromosome _terrainChromosome;
+    [SerializeField]
+    public TerrainChromosome terrainChromosome
+    {
+        get => _terrainChromosome;
+        set
+        {
+            _terrainChromosome = value;
+            terrainGenes = value.terrainGenes;
+        }
+    }
+    private List<TerrainGene> terrainGenes;                    // List of genes to apply
 
     private int offset; // Noise offset for Perlin noise
+
+    // Lists for the vertices and triangles that will then be fed into the array
+    private List<Vector3> vertexList = new List<Vector3>(); // List of mesh vertices
+    private List<int> triangleList = new List<int>();       // List of mesh triangle indices
+    private List<Vector2> uvList = new List<Vector2>();     // List of UV coordinates
 
     // To visualize the mesh values in the inspector
     [Header("Mesh Value Visualization")]
     [SerializeField] private Vector3[] vertexArray;           // Array of mesh vertices
     [SerializeField] private int[] triangleArray;             // Array of mesh triangles
+    [SerializeField] private Vector2[] uvArray;               // Array of mesh UVs
 
     // Generation Enums
     public enum GeneType
@@ -76,7 +87,7 @@ public class TerrainSeed : MonoBehaviour
 
         meshFilter = GetComponent<MeshFilter>();
 
-        GenerateTerrainMesh(); // For testing; should be called by map loading system in the future
+        // GenerateTerrainMesh(); // For testing; should be called by map loading system in the future
     }
 
     #region GENERATION
@@ -91,8 +102,13 @@ public class TerrainSeed : MonoBehaviour
         // Center the terrain object
         transform.position = new Vector3(origin.x, transform.position.y, origin.y);
 
-        meshFilter.mesh.Clear();
+        meshFilter.mesh.Clear(false);
         mesh = new Mesh();
+
+        // clear lists in case of re-generation
+        vertexList.Clear();
+        triangleList.Clear();
+        uvList.Clear();
 
         InitializeVertexGrid();
 
@@ -100,17 +116,9 @@ public class TerrainSeed : MonoBehaviour
 
         InitializeTriangleArray();
 
-        // Copy lists to arrays for mesh assignment
-        vertexArray = new Vector3[vertexList.Count];
-        mesh.vertices = new Vector3[vertexList.Count];
-        vertexList.CopyTo(vertexArray);
+        ConstructUVList();
 
-        triangleArray = new int[triangleList.Count];
-        mesh.triangles = new int[triangleList.Count];
-        triangleList.CopyTo(triangleArray);
-
-        mesh.vertices = vertexArray;
-        mesh.triangles = triangleArray;
+        CopyListsToArrays();
 
         mesh.subMeshCount = 4;
 
@@ -123,6 +131,29 @@ public class TerrainSeed : MonoBehaviour
 
         meshCollider = GetComponent<MeshCollider>();
         meshCollider.sharedMesh = meshFilter.mesh;
+    }
+
+    /// <summary>
+    /// Copy lists to arrays for mesh assignment.
+    /// </summary>
+    private void CopyListsToArrays()
+    {
+        vertexArray = new Vector3[vertexList.Count];
+        mesh.vertices = new Vector3[vertexList.Count];
+        vertexList.CopyTo(vertexArray);
+
+        triangleArray = new int[triangleList.Count];
+        mesh.triangles = new int[triangleList.Count];
+        triangleList.CopyTo(triangleArray);
+
+        uvArray = new Vector2[uvList.Count];
+        mesh.uv = new Vector2[uvList.Count];
+        uvList.CopyTo(uvArray);
+
+        // Final assignment
+        mesh.vertices = vertexArray;
+        mesh.triangles = triangleArray;
+        mesh.uv = uvArray;
     }
 
     #region > INITIALIZATION
@@ -397,6 +428,31 @@ public class TerrainSeed : MonoBehaviour
     }
 
     #endregion > MATERIALS
+
+    #region > UV MAPPING
+
+    /// <summary>
+    /// Loops over every vertex and adds the necessary UVs.
+    /// </summary>
+    private void ConstructUVList()
+    {
+        for (int i = 0; i < vertexList.Count; i++)
+        {
+            InsertUVAtEnd(i);
+        }
+    }
+
+    /// <summary>
+    /// Inserts UV coordinates at the end of uvList based on the vertices provided.
+    /// </summary>
+    private void InsertUVAtEnd(int vertexIndex)
+    {
+        int x = vertexIndex % Width;
+        int z = vertexIndex / Width;
+        uvList.Add(new Vector2(x, z));
+    }
+
+    #endregion > UV MAPPING
 
     #endregion GENERATION
 
