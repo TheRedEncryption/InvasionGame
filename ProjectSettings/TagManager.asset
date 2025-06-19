@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - CameraHolder
+  - Building Phase Only
+  - FPS Phase Only
   layers:
   - Default
   - TransparentFX

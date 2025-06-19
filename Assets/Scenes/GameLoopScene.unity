@@ -1287,7 +1287,7 @@ Transform:
   m_GameObject: {fileID: 619495140}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3244,6 +3244,7 @@ GameObject:
   - component: {fileID: 1653902980}
   - component: {fileID: 1653902979}
   - component: {fileID: 1653902981}
+  - component: {fileID: 1653902982}
   m_Layer: 0
   m_Name: LocalGameManager
   m_TagString: Untagged
@@ -3365,6 +3366,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentTool: 0
   currentEntity: 0
+--- !u!114 &1653902982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653902976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c7c8403c24e63c49a541499bdf85654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeInFPSStageOnly:
+  - {fileID: 2104208161}
+  - {fileID: 1908117016}
+  activeInBuildStageOnly:
+  - {fileID: 1721026112}
 --- !u!1 &1721026112
 GameObject:
   m_ObjectHideFlags: 0
@@ -3376,7 +3394,7 @@ GameObject:
   - component: {fileID: 1721026113}
   m_Layer: 5
   m_Name: BuildingUI
-  m_TagString: Untagged
+  m_TagString: Building Phase Only
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4604,7 +4622,7 @@ GameObject:
   - component: {fileID: 2104208165}
   m_Layer: 5
   m_Name: Reticle
-  m_TagString: Untagged
+  m_TagString: FPS Phase Only
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

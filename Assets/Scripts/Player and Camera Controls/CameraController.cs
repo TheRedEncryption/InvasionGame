@@ -152,7 +152,10 @@ public class CameraController : MonoBehaviour
         CameraForward = new Vector3(90f, 0f, 0f);
 
         GetComponent<ObjectPlacer>().enabled = true;
-        FindFirstObjectByType<GeneratedReticleUI>().enabled = false;
+
+        // TODO: move these into their own PhaseManager (the script to manage the game phase) unless we want the camera to be in control of displaying/hiding UI elements
+        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInFPSStageOnly, obj => obj.SetActive(false));
+        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInBuildStageOnly, obj => obj.SetActive(true));
     }
 
     private void HandleTopDown()
@@ -211,7 +214,10 @@ public class CameraController : MonoBehaviour
         Cursor.visible = false;
 
         GetComponent<ObjectPlacer>().enabled = false;
-        FindFirstObjectByType<GeneratedReticleUI>().enabled = true;
+
+        // TODO: move these into their own PhaseManager (the script to manage the game phase) unless we want the camera to be in control of displaying/hiding UI elements
+        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInFPSStageOnly, obj => obj.SetActive(true));
+        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInBuildStageOnly, obj => obj.SetActive(false));
     }
 
     private void HandleFirstPerson()
