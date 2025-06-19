@@ -47,20 +47,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18e023af2a53fd942b25f3d046b67e7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  verticalBoundaryBottom: -50
   seed: 25
   terrainBoundary:
     minX: -100
     minZ: -100
     maxX: 100
     maxZ: 100
-  terrainGenes: []
   vertexArray: []
   triangleArray: 
-  normalArray: []
+  uvArray: []
   rockToSnow: 50
-  grassToRock: -30
-  sandCreepInland: -110
+  grassToRock: 30
+  sandCreepInland: -3
   vertexCutoffTolerance: 1
+  percentHeightRockThreshold: 0.5
 --- !u!33 &6736182866630520286
 MeshFilter:
   m_ObjectHideFlags: 0

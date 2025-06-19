@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e64b3e68c90cb6c4c8b9fced60a353e6, type: 3}
   m_Name: Chasm
   m_EditorClassIdentifier: 
-  terrainPosition: {x: 0, y: 0, z: 0}
-  terrainScale: {x: 1, y: 0, z: 1}
+  terrainPosition: {x: 0, y: 10, z: 0}
+  terrainScale: {x: 1, y: 1, z: 1}
   terrainGenes:
   - terrainGeneType: 1
     noiseScale: 0.1
-    heightSteps: 2
+    heightSteps: 50
     planeBounds:
       minX: 0
       minZ: 0
@@ -38,16 +38,28 @@ MonoBehaviour:
     planeHeight: 0
     relativeToSeed: 0
     plateaus: 0
-    islandFalloff: 1
+    islandFalloff: 2
   - terrainGeneType: 2
     noiseScale: 0.1
     heightSteps: 2
     planeBounds:
       minX: -50
-      minZ: -50
-      maxX: 50
-      maxZ: 50
-    planeHeight: 0
+      minZ: -25
+      maxX: 25
+      maxZ: 25
+    planeHeight: -8
     relativeToSeed: 0
     plateaus: 1
     islandFalloff: 0.3
+  - terrainGeneType: 3
+    noiseScale: 0.1
+    heightSteps: 2
+    planeBounds:
+      minX: -50
+      minZ: -25
+      maxX: 25
+      maxZ: 25
+    planeHeight: -8
+    relativeToSeed: 0
+    plateaus: 1
+    islandFalloff: 0.1
