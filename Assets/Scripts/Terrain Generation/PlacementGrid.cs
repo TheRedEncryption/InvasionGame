@@ -45,7 +45,27 @@ public class PlacementGrid : Grid
     /// <returns>The state of a given point</returns>
     public GridVoxelState GetPointState(Point index) => _pointStates[index];
 
-    public GridVoxelState GetPointState(int index) => _pointStates[(Point)this[index]];
+    public GridVoxelState GetPointState(int index)
+    {
+        GridVoxelState state;
+
+        try
+        {
+            state = _pointStates[(Point)this[index] / (int)Scale.x];
+        }
+        catch (KeyNotFoundException)
+        {
+            state = GridVoxelState.none;
+            Debug.LogError("Invalid Index; no state provided when asked: " + index);
+        }
+        catch (Exception e)
+        {
+            state = GridVoxelState.none;
+            Debug.LogError(e);
+        }
+
+        return state;
+    }
     public GridVoxelState GetPointState(int x, int y, int z) => GetPointState(LinearIndexMapping(x, y, z));
 
     /// <summary>
