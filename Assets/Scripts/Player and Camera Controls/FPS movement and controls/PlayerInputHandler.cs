@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -27,7 +25,7 @@ public class PlayerInputHandler : MonoBehaviour
         "Crouch",
         "SwitchCameraView"
     };
-    
+
 
     // --- Input references ---
     // Raw data from input detection

@@ -1,9 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
-#endif
 using UnityEngine;
 
-#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(Bounds2DInt))]
 public class Bounds2DIntDrawer : PropertyDrawer
 {

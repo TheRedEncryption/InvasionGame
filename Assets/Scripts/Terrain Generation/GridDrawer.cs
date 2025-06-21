@@ -21,14 +21,14 @@ public class GridDrawer : PropertyDrawer
         float labelWidth = 45f;
         float fieldWidth = position.width - EditorGUIUtility.fieldWidth + 5;
 
-        Rect row1 = new (position.x, position.y, position.width, lineHeight);
+        Rect row1 = new(position.x, position.y, position.width, lineHeight);
         Rect row2 = new(position.x, position.y + lineHeight + spacing, position.width, lineHeight);
 
-        Rect scaleLabel = new (row1.x, row1.y, labelWidth, lineHeight);
-        Rect scaleField = new (scaleLabel.xMax + 2, row1.y, fieldWidth, lineHeight);
+        Rect scaleLabel = new(row1.x, row1.y, labelWidth, lineHeight);
+        Rect scaleField = new(scaleLabel.xMax + 2, row1.y, fieldWidth, lineHeight);
 
-        Rect dimensionsLabel = new (row2.x, row2.y, labelWidth, lineHeight);
-        Rect dimensionsField = new (scaleLabel.xMax + 2, row2.y, fieldWidth, lineHeight);
+        Rect dimensionsLabel = new(row2.x, row2.y, labelWidth, lineHeight);
+        Rect dimensionsField = new(scaleLabel.xMax + 2, row2.y, fieldWidth, lineHeight);
 
         EditorGUI.LabelField(scaleLabel, "Scale");
         target.Scale = EditorGUI.Vector3Field(scaleField, GUIContent.none, target.Scale);
@@ -59,4 +59,59 @@ public class GridDrawer : PropertyDrawer
     }
 }
 
+
+
+// Extension method to get the parent object of a SerializedProperty
+public static class SerializedPropertyExtensions
+{
+    public static object GetParentObject(this SerializedProperty property)
+    {
+        string path = property.propertyPath.Replace(".Array.data[", "[");
+        object obj = property.serializedObject.targetObject;
+        string[] elements = path.Split('.');
+
+        foreach (var element in elements)
+        {
+            if (element.Contains("["))
+            {
+                string elementName = element.Substring(0, element.IndexOf("["));
+                int index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                obj = GetValue(obj, elementName, index);
+            }
+            else
+            {
+                obj = GetValue(obj, element);
+            }
+        }
+        return obj;
+    }
+
+    private static object GetValue(object source, string name)
+    {
+        if (source == null)
+            return null;
+        var type = source.GetType();
+        var f = type.GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        if (f == null)
+        {
+            var p = type.GetProperty(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
+            if (p == null)
+                return null;
+            return p.GetValue(source, null);
+        }
+        return f.GetValue(source);
+    }
+
+    private static object GetValue(object source, string name, int index)
+    {
+        var enumerable = GetValue(source, name) as System.Collections.IEnumerable;
+        if (enumerable == null) return null;
+        var enm = enumerable.GetEnumerator();
+        for (int i = 0; i <= index; i++)
+        {
+            if (!enm.MoveNext()) return null;
+        }
+        return enm.Current;
+    }
+}
 #endif

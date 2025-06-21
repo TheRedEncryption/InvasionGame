@@ -14,7 +14,7 @@ public class CappedFloatDrawer : PropertyDrawer
     // 2. Plagarism :D
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        CappedFloat target = fieldInfo.GetValue(property.GetParentObject()) as CappedFloat;
+        CappedFloat target = fieldInfo.GetValue(SerializedPropertyUtils.GetParentObject(property)) as CappedFloat;
 
         // SerializedProperty currValue = property.FindPropertyRelative("CurrValue");
         // SerializedProperty maxValue = property.FindPropertyRelative("MaxValue");
