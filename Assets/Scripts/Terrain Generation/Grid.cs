@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -10,6 +12,9 @@ public class Grid
     [Serializable]
     public struct Point
     {
+        public static Point Zero = new Point(0);
+        public static Point One = new Point(1);
+
         /// <summary>
         /// The X component of this points offset
         /// </summary>
@@ -28,12 +33,19 @@ public class Grid
         /// <summary>
         /// The offset of this point as an array of ints.
         /// </summary>
-        public int[] Offset => new int[] { X, Y, Z };
+        public readonly int[] Offset => new int[] { X, Y, Z };
 
         /// <summary>
         /// The offset of this point as a Vector3.
         /// </summary>
-        public Vector3 OffsetVector => new(X, Y, Z);
+        public readonly Vector3 OffsetVector => new(X, Y, Z);
+
+        public Point(int num)
+        {
+            X = num;
+            Y = num;
+            Z = num;
+        }
 
         public Point(int x, int y, int z)
         {
@@ -42,13 +54,91 @@ public class Grid
             Z = z;
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Limits each axes of the point "p" to be between the values set in "min" and "max"
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static Point Clamp(Point p, Point min, Point max)
         {
-            return $"({X},{Y},{Z})";
+            // Check for X irregularities
+            if (p.X < min.X)
+            {
+                p.X = min.X;
+            }
+            else if (p.X > max.X)
+            {
+                p.X = max.X;
+            }
+
+            // Check for Y irregularities
+            if (p.Y < min.Y)
+            {
+                p.Y = min.Y;
+            }
+            else if (p.Y > max.Y)
+            {
+                p.Y = max.Y;
+            }
+
+            // Check for Z irregularities
+            if (p.Z < min.Z)
+            {
+                p.Z = min.Z;
+            }
+            else if (p.Z > max.Z)
+            {
+                p.Z = max.Z;
+            }
+
+            return p;
         }
+
+        public override readonly string ToString() => $"({X}, {Y}, {Z})";
+
+        public override readonly bool Equals(object obj) => (obj is Point point) && point == this;
+
+        public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
 
         public static implicit operator Vector3(Point p) => new(p.X, p.Y, p.Z);
         public static explicit operator Point(Vector3 v) => new((int)v.x, (int)v.y, (int)v.z);
+
+        public static bool operator ==(Point left, Point right) => left.X == right.X && left.Y == right.Y && left.Z == right.Z;
+        public static bool operator !=(Point left, Point right) => !(left.X == right.X && left.Y == right.Y && left.Z == right.Z);
+
+        public static Point operator *(Point left, int right) => new Point(left.X * right, left.Y * right, left.Z * right);
+
+        /// <summary>
+        /// Divides each value in a point by a given integer
+        /// </summary>
+        /// <param name="left">The point</param>
+        /// <param name="right">The integer</param>
+        /// <returns>A point that represents the integer division of all three axes of the point</returns>
+        public static Point operator /(Point left, int right)
+        {
+            Point p;
+
+            try
+            {
+                p = new Point(left.X / right, left.Y / right, left.Z / right);
+            }
+            catch (DivideByZeroException)
+            {
+                // Set p to Zero since current most common usage for division is for indexing purposes; removes future potential errors
+                p = Zero;
+                Debug.LogWarning("Cannot divide a point by zero; defaulting to 0");
+            }
+            catch (Exception e)
+            {
+                p = Zero;
+                Debug.LogError("Unchecked error; defaulting to zero: " + e.Message);
+            }
+
+            return p;
+        } 
+        
     }
     
     /// <summary>
@@ -59,24 +149,37 @@ public class Grid
     /// <summary>
     /// Dimensions of the overall grid.
     /// </summary>
-    [SerializeField] private Point _dimensions = new (1,1,1);
+    [SerializeField] protected Point _dimensions = new (1,1,1);
 
+    /// <summary>
+    /// The number of points along each axis.
+    /// </summary>
     public Point Dimensions
     {
         get => _dimensions;
         set
         {
-            _dimensions = value;
-            _points = new Point[_dimensions.X * _dimensions.Y * _dimensions.Z];
-            MakeGrid();
-
-            Debug.Log(NumPoints);
+            if (_dimensions != value)
+            {
+                _dimensions = value;
+                _points = new Point[_dimensions.X * _dimensions.Y * _dimensions.Z];
+                MakeGrid();
+            }
         }
     }
 
-    [HideInInspector] [SerializeField] private Point[] _points;
+    /// <summary>
+    /// An array of the points in the grid.
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    protected Point[] _points;
 
-
+    /// <summary>
+    /// Get a vector from the origin to a point in the grid VIA direct index.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public Vector3 this[int index]
     {
         get
@@ -87,7 +190,7 @@ public class Grid
     }
 
     /// <summary>
-    /// Get a vector in the world based on a point in the grid.
+    /// Get a vector from the origin to a point in the grid.
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -114,7 +217,7 @@ public class Grid
         MakeGrid();
     }
 
-    public void MakeGrid()
+    public virtual void MakeGrid()
     {
         for (int i = 0; i < _dimensions.X; i++)
         {
@@ -130,6 +233,6 @@ public class Grid
         }
     }
 
-    private Point SetPoint(int x, int y, int z, Point newPoint) => _points[x + _dimensions.X * (y + z * _dimensions.Y)] = newPoint;
+    protected virtual Point SetPoint(int x, int y, int z, Point newPoint) => _points[x + _dimensions.X * (y + z * _dimensions.Y)] = newPoint;
     public void SetScale(Vector3 scale) => Scale = scale;
 }
