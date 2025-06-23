@@ -11,10 +11,12 @@ public class PlacementGrid : Grid
     [Serializable]
     public enum GridVoxelState
     {
+        // States
         none = 0b_000,
         occupied = 0b_001,
         unoccupied = 0b_010,
         air = 0b_100,
+        // Masks
         free = 0b_110
     }
 
