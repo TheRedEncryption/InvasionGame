@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ToggleBuildMenu : MonoBehaviour
+public class ToggleMenu : MonoBehaviour
 {
 
     [SerializeField] private Toggle toggle;
