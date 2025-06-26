@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 941137740220390600}
   - component: {fileID: 8369930616829944417}
   m_Layer: 9
-  m_Name: Jammy Walker
+  m_Name: EvilJammy Walker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dd7873de17f2bc445ab33e75d334a917, type: 2}
+  - {fileID: 2100000, guid: 0d49fc51ca4919e4c85ac383558b9475, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
