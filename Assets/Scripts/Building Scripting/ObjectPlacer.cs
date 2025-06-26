@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -48,7 +49,6 @@ public class ObjectPlacer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         // Shoot a raycast down
         Vector3 screenPosition = Mouse.current.position.ReadValue();
         Ray placeDirection = Camera.main.ScreenPointToRay(screenPosition);
@@ -61,8 +61,11 @@ public class ObjectPlacer : MonoBehaviour
 
         if (Evaluation && PlayerInputHandler.Instance.AttackTriggered && !EventSystem.current.IsPointerOverGameObject())
         {
-            GameObject instance = Instantiate(_selectedGameObject, _debugEditiedRayPos, Quaternion.identity);
-            _grid.SetPointState(_currIndex.X, _currIndex.Y, _currIndex.Z, PlacementGrid.GridVoxelState.occupied);
+            if (NetworkManager.Singleton.IsConnectedClient)
+            {
+                GameObject instance = Instantiate(_selectedGameObject, _debugEditiedRayPos, Quaternion.identity);
+                _grid.SetPointState(_currIndex.X, _currIndex.Y, _currIndex.Z, PlacementGrid.GridVoxelState.occupied);
+            }
         }
 
         // Change the color of the debug sphere to match the results of the eval
