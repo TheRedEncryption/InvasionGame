@@ -154,8 +154,28 @@ public class CameraController : MonoBehaviour
         GetComponent<ObjectPlacer>().enabled = true;
 
         // TODO: move these into their own PhaseManager (the script to manage the game phase) unless we want the camera to be in control of displaying/hiding UI elements
-        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInFPSStageOnly, obj => obj.SetActive(false));
-        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInBuildStageOnly, obj => obj.SetActive(true));
+        StateActiveList stateActiveList = FindFirstObjectByType<StateActiveList>();
+        if (stateActiveList != null)
+        {
+            Array.ForEach(stateActiveList.activeInFPSStageOnly, obj =>
+            {
+                var uiDoc = obj.GetComponent<UnityEngine.UIElements.UIDocument>();
+                if (uiDoc == null)
+                {
+                    obj.SetActive(true);
+                }
+                else
+                {
+                    // If the object has a UIDocument, we want to disable it
+                    uiDoc.rootVisualElement.style.display = UnityEngine.UIElements.DisplayStyle.None;
+                }
+            });
+            Array.ForEach(stateActiveList.activeInBuildStageOnly, obj => obj.SetActive(true));
+        }
+        else
+        {
+            Debug.LogWarning("[CameraController]: No StateActiveList found.");
+        }
     }
 
     private void HandleTopDown()
@@ -216,8 +236,27 @@ public class CameraController : MonoBehaviour
         GetComponent<ObjectPlacer>().enabled = false;
 
         // TODO: move these into their own PhaseManager (the script to manage the game phase) unless we want the camera to be in control of displaying/hiding UI elements
-        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInFPSStageOnly, obj => obj.SetActive(true));
-        Array.ForEach(FindFirstObjectByType<StateActiveList>().activeInBuildStageOnly, obj => obj.SetActive(false));
+        StateActiveList stateActiveList = FindFirstObjectByType<StateActiveList>();
+        if (stateActiveList != null)
+        {
+            Array.ForEach(stateActiveList.activeInFPSStageOnly, obj =>
+            {
+                var uiDoc = obj.GetComponent<UnityEngine.UIElements.UIDocument>();
+                if (uiDoc == null)
+                {
+                    obj.SetActive(true);
+                }
+                else {                     
+                    // If the object has a UIDocument, we want to enable it
+                    uiDoc.rootVisualElement.style.display = UnityEngine.UIElements.DisplayStyle.Flex;
+                }
+            });
+            Array.ForEach(stateActiveList.activeInBuildStageOnly, obj => obj.SetActive(false));
+        }
+        else
+        {
+            Debug.LogWarning("[CameraController]: No StateActiveList found.");
+        }
     }
 
     private void HandleFirstPerson()
