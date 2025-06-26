@@ -23,6 +23,7 @@ public class TerrainSeed : MonoBehaviour
     // Vertical boundary bottom
     [SerializeField] private float verticalBoundaryBottom = -50;
 
+
     private float rootArea;           // Used for falloff calculations
     private Vector2 origin;           // Center of the terrain
 

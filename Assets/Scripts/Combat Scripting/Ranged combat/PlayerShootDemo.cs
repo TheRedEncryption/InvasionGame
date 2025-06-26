@@ -7,7 +7,6 @@ public class PlayerShootDemo : ProjectileSpawner
     void Start()
     {
         _cameraTransform = Camera.main.transform;
-        Debug.Log(_cameraTransform);
     }
 
     // Update is called once per frame

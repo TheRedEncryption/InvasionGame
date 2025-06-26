@@ -269,10 +269,10 @@ public class PlayerFPSMovement : MonoBehaviour
             _slidingCooldown = _maxSlideCooldown;
         }
 
-        if (previousMoveState != MoveState)
-        {
-            Debug.Log($"Player move state changed from {previousMoveState} to {MoveState} with velocity {planarVel.magnitude}");
-        }
+        //if (previousMoveState != MoveState)
+        //{
+        //    Debug.Log($"Player move state changed from {previousMoveState} to {MoveState} with velocity {planarVel.magnitude}");
+        //}
 
         _rb.linearDamping = Drag;
     }
