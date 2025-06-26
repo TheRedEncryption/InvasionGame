@@ -20,20 +20,14 @@ public class HealthUIHandler : MonoBehaviour
     }
     private void OnEnable()
     {
-        Debug.Log("HealthUIHandler enabled, associating with PlayerEntity.");
         AssociateWithPlayer();
     }
     public void AssociateWithPlayer()
     {
         if (PlayerEntity != null)
         {
-            Debug.Log("Associating HealthUIHandler with PlayerEntity: " + PlayerEntity.name);
             PlayerEntity.HealthChanged += OnEntityHealthChanged;
             UpdateHealthUI();
-        }
-        else
-        {
-            Debug.LogError("PlayerEntity is not assigned.");
         }
     }
 
@@ -44,7 +38,6 @@ public class HealthUIHandler : MonoBehaviour
         {
             if (healthLabel != null)
             {
-                Debug.Log($"Updating health UI (via changed): {e.healthArg}/{e.maxHealthArg}");
                 healthLabel.text = $"{e.healthArg}/{e.maxHealthArg}";
                 float healthRatio = (float)e.healthArg / e.maxHealthArg;
                 float healthPercent = Mathf.Lerp(19, 93, healthRatio);
@@ -65,7 +58,6 @@ public class HealthUIHandler : MonoBehaviour
     {
         var playerHealth = PlayerEntity.Health.CurrValue;
         var playerMaxHealth = PlayerEntity.Health.MaxValue;
-        Debug.Log($"Updating health UI (via force): {playerHealth}/{playerMaxHealth}");
         healthLabel.text = $"{playerHealth}/{playerMaxHealth}";
         float healthRatio = (float)playerHealth / playerMaxHealth;
         float healthPercent = Mathf.Lerp(19, 93, healthRatio);
