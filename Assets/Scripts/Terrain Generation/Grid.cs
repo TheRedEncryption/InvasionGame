@@ -96,6 +96,38 @@ public class Grid
             return p;
         }
 
+        /// <summary>
+        /// Limits the X and Z axes of the point "p" to be between the values set in "min" and "max"
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static Point ClampXZ(Point p, Point min, Point max)
+        {
+            // Check for X irregularities
+            if (p.X < min.X)
+            {
+                p.X = min.X;
+            }
+            else if (p.X > max.X)
+            {
+                p.X = max.X;
+            }
+
+            // Check for Z irregularities
+            if (p.Z < min.Z)
+            {
+                p.Z = min.Z;
+            }
+            else if (p.Z > max.Z)
+            {
+                p.Z = max.Z;
+            }
+
+            return p;
+        }
+
         public override readonly string ToString() => $"({X}, {Y}, {Z})";
 
         public override readonly bool Equals(object obj) => (obj is Point point) && point == this;

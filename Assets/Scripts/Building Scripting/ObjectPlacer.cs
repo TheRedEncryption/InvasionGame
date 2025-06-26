@@ -61,7 +61,8 @@ public class ObjectPlacer : MonoBehaviour
 
         if (Evaluation && PlayerInputHandler.Instance.AttackTriggered && !EventSystem.current.IsPointerOverGameObject())
         {
-            _ = Instantiate(_selectedGameObject, _hit.point, Quaternion.identity);
+            GameObject instance = Instantiate(_selectedGameObject, _debugEditiedRayPos, Quaternion.identity);
+            _grid.SetPointState(_currIndex.X, _currIndex.Y, _currIndex.Z, PlacementGrid.GridVoxelState.occupied);
         }
 
         // Change the color of the debug sphere to match the results of the eval
@@ -79,7 +80,7 @@ public class ObjectPlacer : MonoBehaviour
     }
 
     private bool Evaluate() =>
-    !(_collideTower);
+    !_collideTower && _grid.GetPointState(_currIndex) == PlacementGrid.GridVoxelState.unoccupied;
 
     void OnDisable()
     {
@@ -112,35 +113,26 @@ public class ObjectPlacer : MonoBehaviour
     #endregion
 
     private Vector3 _debugEditiedRayPos = new();
+    private Grid.Point _currIndex = new();
 
     private Vector3 CastRayIntoGrid(Vector3 point)
     {
         // Method #1
-        Vector3 realignmentOffset = new Vector3(_grid.Scale.x / 2, _grid.Scale.y / 2, _grid.Scale.z / 2) + _gridPos;
-        Vector3 hitPosition = _hit.point - realignmentOffset;
-        Vector3 gridOffset = new Vector3(
-            hitPosition.x % _grid.Scale.x,
-            hitPosition.y % _grid.Scale.y,
-            hitPosition.z % _grid.Scale.z
-        );
+        Vector3 realignmentOffset = new(_grid.Scale.x / 2, _grid.Scale.y / 2, _grid.Scale.z / 2);
+        Vector3 hitPosition = _hit.point - realignmentOffset - _gridPos;
+        Vector3 gridOffset = new(hitPosition.x % _grid.Scale.x, hitPosition.y % _grid.Scale.y, hitPosition.z % _grid.Scale.z);
 
-        Vector3 gridIndex = _hit.point - gridOffset;
+        //Vector3 hitAdjusted = _hit.point - gridOffset;
+        //_debugEditiedRayPos = hitAdjusted + realignmentOffset;
 
-        _debugEditiedRayPos = gridIndex + realignmentOffset;
-        //Grid.Point.Clamp((Grid.Point)_debugEditiedRayPos, (Grid.Point)_grid[0], (Grid.Point)_grid[_grid.NumPoints - 1]);
+        Grid.Point gridIndex = (Grid.Point)(_hit.point - gridOffset + realignmentOffset);
+        Grid.Point cappedPoint = Grid.Point.Clamp(gridIndex, (Grid.Point)_grid[0], (Grid.Point)_grid[_grid.NumPoints - 1]);
 
-        // Method #2 - Unfinished raycasting style
-        /*
-        // Set up detection planes
-        Vector3 direction = placeDirection.direction;
+        // For DEMO purposes EXCLUSIVELY; USE SEPERATE
+        while (_grid.GetPointState(cappedPoint) == PlacementGrid.GridVoxelState.occupied && cappedPoint.Y <= _grid.Dimensions.Y) cappedPoint.Y++; 
 
-        Vector3[] normals = ComputePossibleNormals(direction);
-
-        if (normals.Length == 0)
-        {
-            return Vector3.zero;
-        }
-        */
+        _debugEditiedRayPos = cappedPoint;
+        _currIndex = cappedPoint;
 
         return _debugEditiedRayPos;
     }
@@ -183,11 +175,18 @@ public class ObjectPlacer : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(_debugEditiedRayPos, 0.3f);
 
-        Gizmos.color = Color.yellow;
         for (int i = 0; i < _grid.NumPoints; i++)
         {
             if (_grid.GetPointState(i) == PlacementGrid.GridVoxelState.unoccupied)
+            {
+                Gizmos.color = Color.yellow;
                 Gizmos.DrawSphere(_grid[i] + _gridPos, 0.1f);
+            }
+            else
+            {
+                Gizmos.color = Color.white;
+                Gizmos.DrawWireSphere(_grid[i] + _gridPos, 0.1f);
+            }
         }
     }
 }
