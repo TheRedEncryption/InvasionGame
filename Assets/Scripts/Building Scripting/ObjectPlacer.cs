@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class ObjectPlacer : MonoBehaviour
 {
-    public PlacementGrid _grid = new(new Grid.Point(20,20,20), 1);
+    public PlacementGrid _grid = new(new Grid.Point(50,20,50), 1);
 
     public Vector3 _gridPos;
 
