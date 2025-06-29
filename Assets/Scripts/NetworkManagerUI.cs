@@ -41,7 +41,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void SetNetworkAddresses()
     {
-        string ipv4Address = IPText.text != null ? IPText.text : "127.0.0.1";
+        string ipv4Address = IPText.text ?? "127.0.0.1";
         ushort portNum = string.IsNullOrEmpty(PortText.text) ? ushort.Parse(PortText.text) : (ushort)5555;
         if (IPText.text != null)
         {

@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 
-[RequireComponent(typeof(StateMachine), typeof(Rigidbody))]
-public class Entity : MonoBehaviour
+[RequireComponent(typeof(StateMachine), typeof(Rigidbody), typeof(NetworkObject))]
+public class Entity : NetworkBehaviour
 {
     [SerializeField] private CappedFloat _health;
     public CappedFloat Health => _health;
@@ -51,7 +52,8 @@ public class Entity : MonoBehaviour
 
     public virtual void OnDeath()
     {
-        gameObject.SetActive(false);
+        GetComponent<NetworkObject>().Despawn();
+        //gameObject.SetActive(false);
     }
     
     protected virtual void OnHealthChanged()
