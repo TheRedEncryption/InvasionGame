@@ -40,15 +40,20 @@ public class ObjectPlacer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+#if !UNITY_SERVER
         _debugSphereInstance = Instantiate(_debugSphere, Vector3.positiveInfinity, Quaternion.identity);
         DebugSphereScript deScript = _debugSphereInstance.GetComponent<DebugSphereScript>();
         deScript.Collided += OnCollide;
         deScript.DeCollided += OnDeCollide;
+#else
+        return;
+#endif
     }
 
     // Update is called once per frame
     void Update()
     {
+#if !UNITY_SERVER
         // Shoot a raycast down
         Vector3 screenPosition = Mouse.current.position.ReadValue();
         Ray placeDirection = Camera.main.ScreenPointToRay(screenPosition);
@@ -80,6 +85,9 @@ public class ObjectPlacer : MonoBehaviour
                 _debugSphereInstance.GetComponent<Renderer>().material.SetColor("_EmissionColor", goodColor);
             }
         }
+#else
+        return;
+#endif
     }
 
     private bool Evaluate() =>
@@ -132,7 +140,7 @@ public class ObjectPlacer : MonoBehaviour
         Grid.Point cappedPoint = Grid.Point.Clamp(gridIndex, (Grid.Point)_grid[0], (Grid.Point)_grid[_grid.NumPoints - 1]);
 
         // For DEMO purposes EXCLUSIVELY; USE SEPERATE
-        while (_grid.GetPointState(cappedPoint) == PlacementGrid.GridVoxelState.occupied && cappedPoint.Y <= _grid.Dimensions.Y) cappedPoint.Y++; 
+        while (_grid.GetPointState(cappedPoint) == PlacementGrid.GridVoxelState.occupied && cappedPoint.Y <= _grid.Dimensions.Y) cappedPoint.Y++;
 
         _debugEditiedRayPos = cappedPoint;
         _currIndex = cappedPoint;
@@ -165,7 +173,7 @@ public class ObjectPlacer : MonoBehaviour
         if (direction.z != 0)
         {
             if (direction.z > 0)
-                normals.Add(Vector3.forward); 
+                normals.Add(Vector3.forward);
             else
                 normals.Add(Vector3.back);
         }
