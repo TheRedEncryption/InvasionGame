@@ -14537,7 +14537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  associator: {fileID: 0}
+  associator: {fileID: 11400000, guid: 40046de8d3e71594487b8dbee64a3c88, type: 2}
 --- !u!4 &417386357
 Transform:
   m_ObjectHideFlags: 0
