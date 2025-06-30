@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -26,7 +24,7 @@ public class ObjectPlacer : MonoBehaviour
 
     #endregion
 
-    public PlacementGrid _grid = new(new Grid.Point(50, 20, 50), 1);
+    public PlacementGrid _grid = new(new Grid.Point(200, 20, 200), 1);
 
     public Vector3 _gridPos;
 
@@ -80,7 +78,7 @@ public class ObjectPlacer : MonoBehaviour
 
         Physics.Raycast(placeDirection, out _hit, 320f);
 
-        _debugSphereInstance.transform.position = CastRayIntoGrid(_hit.point);
+        _debugSphereInstance.transform.position = SnapToGrid();
 
         Evaluation = Evaluate();
 
@@ -88,11 +86,8 @@ public class ObjectPlacer : MonoBehaviour
         {
             if (NetworkManager.Singleton.IsConnectedClient)
             {
-                // Raw spawning of object
-                //GameObject instance = Instantiate(_selectedGameObject, _debugEditiedRayPos, Quaternion.identity);
-
                 // Cache the position for later use in the BirdsEyeNetworkLink
-                GetComponent<BirdsEyeNetworkLink>().AddObjectToRef(_debugEditiedRayPos, Instance._currentSelection);
+                GetComponent<BirdsEyeNetworkAssembler>().AddObjectToRef(_debugEditiedRayPos, Instance._currentSelection);
                 _grid.SetPointState(_currIndex.X, _currIndex.Y, _currIndex.Z, PlacementGrid.GridVoxelState.occupied);
             }
         }
@@ -114,6 +109,10 @@ public class ObjectPlacer : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// Evaluates whether or not the current state of the curser should allow object placement.
+    /// </summary>
+    /// <returns></returns>
     private bool Evaluate() =>
     !_collideTower && _grid.GetPointState(_currIndex) == PlacementGrid.GridVoxelState.unoccupied;
 
@@ -150,15 +149,16 @@ public class ObjectPlacer : MonoBehaviour
     private Vector3 _debugEditiedRayPos = new();
     private Grid.Point _currIndex = new();
 
-    private Vector3 CastRayIntoGrid(Vector3 point)
+    /// <summary>
+    /// Snaps a given point to somewhere in the grid
+    /// </summary>
+    /// <returns></returns>
+    private Vector3 SnapToGrid()
     {
         // Method #1
         Vector3 realignmentOffset = new(_grid.Scale.x / 2, _grid.Scale.y / 2, _grid.Scale.z / 2);
         Vector3 hitPosition = _hit.point - realignmentOffset - _gridPos;
         Vector3 gridOffset = new(hitPosition.x % _grid.Scale.x, hitPosition.y % _grid.Scale.y, hitPosition.z % _grid.Scale.z);
-
-        //Vector3 hitAdjusted = _hit.point - gridOffset;
-        //_debugEditiedRayPos = hitAdjusted + realignmentOffset;
 
         Grid.Point gridIndex = (Grid.Point)(_hit.point - gridOffset + realignmentOffset);
         Grid.Point cappedPoint = Grid.Point.Clamp(gridIndex, (Grid.Point)_grid[0], (Grid.Point)_grid[_grid.NumPoints - 1]);
@@ -172,41 +172,10 @@ public class ObjectPlacer : MonoBehaviour
         return _debugEditiedRayPos;
     }
 
-    /// <summary>
-    /// Compute which sides of an (X,Y,Z) normal cube a vector with a direction could intersect
-    /// </summary>
-    /// <param name="direction"></param>
-    /// <returns></returns>
-    private Vector3[] ComputePossibleNormals(Vector3 direction)
-    {
-        List<Vector3> normals = new(3);
-        if (direction.x != 0)
-        {
-            if (direction.x > 0)
-                normals.Add(Vector3.right);
-            else
-                normals.Add(Vector3.left);
-        }
-        if (direction.y != 0)
-        {
-            if (direction.y > 0)
-                normals.Add(Vector3.up);
-            else
-                normals.Add(Vector3.down);
-        }
-        if (direction.z != 0)
-        {
-            if (direction.z > 0)
-                normals.Add(Vector3.forward);
-            else
-                normals.Add(Vector3.back);
-        }
-
-        return normals.ToArray();
-    }
-
+    /* Debug spheres
     void OnDrawGizmos()
     {
+        
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(_debugEditiedRayPos, 0.3f);
 
@@ -223,5 +192,7 @@ public class ObjectPlacer : MonoBehaviour
                 Gizmos.DrawWireSphere(_grid[i] + _gridPos, 0.1f);
             }
         }
+        
     }
+    */
 }

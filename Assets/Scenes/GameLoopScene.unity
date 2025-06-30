@@ -14518,7 +14518,7 @@ GameObject:
   - component: {fileID: 417386358}
   - component: {fileID: 417386356}
   m_Layer: 0
-  m_Name: LocalLocalGameManager
+  m_Name: BuildPhaseManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14537,7 +14537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  mapping: {fileID: 11400000, guid: 40046de8d3e71594487b8dbee64a3c88, type: 2}
+  associator: {fileID: 0}
 --- !u!4 &417386357
 Transform:
   m_ObjectHideFlags: 0

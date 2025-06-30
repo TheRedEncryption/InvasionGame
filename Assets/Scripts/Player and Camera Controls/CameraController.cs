@@ -259,7 +259,7 @@ public class CameraController : MonoBehaviour
             Debug.LogWarning("[CameraController]: No StateActiveList found.");
         }
 
-        GetComponent<BirdsEyeNetworkLink>().DoTheSpawning();
+        GetComponent<BirdsEyeNetworkAssembler>().PushListToSpawner();
     }
 
     private void HandleFirstPerson()
