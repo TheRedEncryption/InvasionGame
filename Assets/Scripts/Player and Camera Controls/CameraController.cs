@@ -41,6 +41,7 @@ public class CameraController : MonoBehaviour
     private Vector2 rotation;
     private float inputLagTimer;
     private Vector2 lastInputEvent;
+    private BirdsEyeNetworkAssembler myAssembler;
 
     // TODO: implement boundaries
     public static Vector3 CameraForward { get; private set; }
@@ -70,6 +71,7 @@ public class CameraController : MonoBehaviour
         cam = Camera.main;
         SwitchCameraState(currentCameraState); // for testing purposes
         CameraForward = Vector3.forward;
+        myAssembler = GetComponent<BirdsEyeNetworkAssembler>();
     }
 
     void Update()
@@ -241,15 +243,14 @@ public class CameraController : MonoBehaviour
         {
             Array.ForEach(stateActiveList.activeInFPSStageOnly, obj =>
             {
-                var uiDoc = obj.GetComponent<UnityEngine.UIElements.UIDocument>();
-                if (uiDoc == null)
-                {
-                    obj.SetActive(true);
-                }
-                else
+                if (obj.TryGetComponent<UnityEngine.UIElements.UIDocument>(out var uiDoc))
                 {
                     // If the object has a UIDocument, we want to enable it
                     uiDoc.rootVisualElement.style.display = UnityEngine.UIElements.DisplayStyle.Flex;
+                }
+                else
+                {
+                    obj.SetActive(true);
                 }
             });
             Array.ForEach(stateActiveList.activeInBuildStageOnly, obj => obj.SetActive(false));
@@ -259,7 +260,9 @@ public class CameraController : MonoBehaviour
             Debug.LogWarning("[CameraController]: No StateActiveList found.");
         }
 
-        GetComponent<BirdsEyeNetworkAssembler>().PushListToSpawner();
+        // DEMO: Spawn the objects when switching from FPS mode
+        myAssembler.PushListToSpawner();
+        //myAssembler.ResetObjectRefSheet();
     }
 
     private void HandleFirstPerson()

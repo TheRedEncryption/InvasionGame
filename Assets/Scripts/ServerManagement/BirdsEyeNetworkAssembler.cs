@@ -10,6 +10,11 @@ using System.Collections.Generic;
 /// </summary>
 public class BirdsEyeNetworkAssembler : MonoBehaviour
 {
+    void Start()
+    {
+        ResetObjectRefSheet();
+    }
+    
     /// <summary>
     /// Data representing the placed objects in Birdseye mode.
     /// </summary>
