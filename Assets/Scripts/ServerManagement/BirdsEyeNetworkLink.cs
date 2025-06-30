@@ -7,24 +7,18 @@ using System.Collections.Generic;
 
 public class BirdsEyeNetworkLink : MonoBehaviour
 {
-    public List<PlaceableObjectMap> gridLayout;
+    public List<PlaceableObjectMap> _gridLayout = new();
 
     #region Handle data storage
 
-    public GameObject[] _placeableObjects;
-
-    public enum PlaceableObjectID
-    {
-        Jammy,
-        Wall
-    }
-
+    public TransferVessel TransferVesselRef;
+    
     public struct PlaceableObjectMap : INetworkSerializable
     {
         public byte _mapping;
         public Vector3 _position;
 
-        public PlaceableObjectMap(PlaceableObjectID mapping, Vector3 position)
+        public PlaceableObjectMap(BuildPhaseEntity mapping, Vector3 position)
         {
             _mapping = (byte)mapping;
             _position = position;
@@ -37,26 +31,27 @@ public class BirdsEyeNetworkLink : MonoBehaviour
         }
     }
 
-    public GameObject GetObjectFromReference(PlaceableObjectID mapping) => _placeableObjects[(int)mapping];
-    public GameObject GetObjectFromReference(byte mapping) => _placeableObjects[mapping];
+
 
     #endregion
 
-    public void AddObjectToRef()
+    public void AddObjectToRef(Vector3 position, BuildPhaseEntity entityType)
     {
-
+        _gridLayout.Add(new PlaceableObjectMap(entityType, position));
     }
 
-    [ServerRpc]
-    public void SpawnObjectFromRefServerRpc()
+    public void ResetObjectRefSheet()
     {
-        foreach (PlaceableObjectMap map in gridLayout)
+        _gridLayout = new();
+    }
+
+    public void DoTheSpawning()
+    {
+        foreach (PlaceableObjectMap map in _gridLayout)
         {
-            GameObject spawned = Instantiate(GetObjectFromReference(map._mapping), map._position, Quaternion.identity);
-            spawned.GetComponent<NetworkObject>().Spawn(true);
+            TransferVesselRef.SpawnObjectsFromRefServerRpc(map);
         }
         
     }
 
-    
 }

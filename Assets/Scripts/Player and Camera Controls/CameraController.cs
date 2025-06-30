@@ -246,7 +246,8 @@ public class CameraController : MonoBehaviour
                 {
                     obj.SetActive(true);
                 }
-                else {                     
+                else
+                {
                     // If the object has a UIDocument, we want to enable it
                     uiDoc.rootVisualElement.style.display = UnityEngine.UIElements.DisplayStyle.Flex;
                 }
@@ -257,6 +258,8 @@ public class CameraController : MonoBehaviour
         {
             Debug.LogWarning("[CameraController]: No StateActiveList found.");
         }
+
+        GetComponent<BirdsEyeNetworkLink>().DoTheSpawning();
     }
 
     private void HandleFirstPerson()

@@ -1,6 +1,15 @@
 using UnityEngine;
 using System;
 
+// where entity IDs are born
+public enum BuildPhaseEntity
+{
+    jammyWalker,
+    evilJammyWalker,
+    timmyStalker,
+    wall
+}
+
 public class BuildPhaseManager : MonoBehaviour
 {
     public enum BuildPhaseTool
@@ -8,14 +17,6 @@ public class BuildPhaseManager : MonoBehaviour
         hand,
         place,
         erase
-    }
-
-    // where entity IDs are born
-    public enum BuildPhaseEntity
-    {
-        jammyWalker,
-        evilJammyWalker,
-        timmyStalker
     }
 
     public BuildPhaseTool currentTool;
@@ -57,7 +58,6 @@ public class BuildPhaseManager : MonoBehaviour
         }
 
         currentEntity = (BuildPhaseEntity)bpe;
-        Debug.Log("Current entity set to " + currentEntity);
-        objectPlacer._selectedGameObject = mappingToUse.mapping[bpe];
+        ObjectPlacer.Instance._currentSelection = currentEntity;
     }
 }

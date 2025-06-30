@@ -52,8 +52,8 @@ public class Entity : NetworkBehaviour
 
     public virtual void OnDeath()
     {
-        GetComponent<NetworkObject>().Despawn();
-        //gameObject.SetActive(false);
+        //GetComponent<NetworkObject>().;
+        gameObject.SetActive(false);
     }
     
     protected virtual void OnHealthChanged()

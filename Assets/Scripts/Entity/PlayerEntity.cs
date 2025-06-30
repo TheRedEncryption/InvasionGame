@@ -10,6 +10,6 @@ public class PlayerEntity : Entity
     // Update is called once per frame
     public override void OnDeath()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 }

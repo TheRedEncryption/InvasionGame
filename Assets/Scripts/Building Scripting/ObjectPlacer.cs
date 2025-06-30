@@ -1,12 +1,32 @@
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class ObjectPlacer : MonoBehaviour
 {
-    public PlacementGrid _grid = new(new Grid.Point(50,20,50), 1);
+    #region Singleton Implementation
+    public static ObjectPlacer Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Debug.LogWarning("Extra Object Placer Detected");
+            Destroy(gameObject);
+        }
+    }
+
+    #endregion
+
+    public PlacementGrid _grid = new(new Grid.Point(50, 20, 50), 1);
 
     public Vector3 _gridPos;
 
@@ -33,9 +53,9 @@ public class ObjectPlacer : MonoBehaviour
     private bool _evaulation = false;
     private bool _evaulationOld = false;
 
-    private Vector3 _objectSpawnPosition;
-
     RaycastHit _hit = new();
+
+    [HideInInspector] public BuildPhaseEntity _currentSelection;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -68,7 +88,11 @@ public class ObjectPlacer : MonoBehaviour
         {
             if (NetworkManager.Singleton.IsConnectedClient)
             {
-                GameObject instance = Instantiate(_selectedGameObject, _debugEditiedRayPos, Quaternion.identity);
+                // Raw spawning of object
+                //GameObject instance = Instantiate(_selectedGameObject, _debugEditiedRayPos, Quaternion.identity);
+
+                // Cache the position for later use in the BirdsEyeNetworkLink
+                GetComponent<BirdsEyeNetworkLink>().AddObjectToRef(_debugEditiedRayPos, Instance._currentSelection);
                 _grid.SetPointState(_currIndex.X, _currIndex.Y, _currIndex.Z, PlacementGrid.GridVoxelState.occupied);
             }
         }
