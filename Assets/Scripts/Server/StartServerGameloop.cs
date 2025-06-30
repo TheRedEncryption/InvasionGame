@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class StartServerGameloop : MonoBehaviour
 {
+
+    private UnityTransport uTrans;
+
     void Start()
     {
         // figure out if server, if not, return immediately
@@ -12,6 +15,7 @@ public class StartServerGameloop : MonoBehaviour
         Destroy(gameObject);
         return;
 #else
+        uTrans = FindFirstObjectByType<UnityTransport>();
         // get network port as ushort from CLI flag
         ushort port = 7777; // default port
         string[] args = System.Environment.GetCommandLineArgs();
@@ -30,11 +34,13 @@ public class StartServerGameloop : MonoBehaviour
                 break;
             }
         }
-        Debug.Log($"[StartServerGameloop]: Using the network port {port}");
 
         // start server
-        FindFirstObjectByType<UnityTransport>().SetConnectionData("0.0.0.0", port);
+        uTrans.SetConnectionData("0.0.0.0", port);
         NetworkManager.Singleton.StartServer();
+        Debug.Log($"[StartServerGameloop]: Listening on {uTrans.ConnectionData.ListenEndPoint}");
+
+        Debug.Log($"===STATS===\nAddress: {uTrans.ConnectionData.Address}\nPort: {uTrans.ConnectionData.Port}\nServer Endpoint: {uTrans.ConnectionData.ServerEndPoint}\n===========");
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
 #endif

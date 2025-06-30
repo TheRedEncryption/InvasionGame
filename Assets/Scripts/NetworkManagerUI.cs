@@ -8,6 +8,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 public class NetworkManagerUI : MonoBehaviour
 {
@@ -42,15 +43,35 @@ public class NetworkManagerUI : MonoBehaviour
         clientButton.onClick.AddListener(() =>
         {
             SetNetworkAddresses();
+            Debug.Log($"Attempting connection to {unityTransport.ConnectionData.Address}:{unityTransport.ConnectionData.Port}!");
             NetworkManager.Singleton.StartClient();
         });
     }
 
     private void SetNetworkAddresses()
     {
-        string ipv4Address = String.IsNullOrEmpty(IPText.text) ? IPText.text : "127.0.0.1";
-        ushort portNum = string.IsNullOrEmpty(PortText.text) ? ushort.Parse(PortText.text) : (ushort)7777;
+        string ipv4Address;
+        if (IPText.text.Length > 0)
+        {
+            ipv4Address = SanitizeAddress(IPText.text);
+        }
+        else
+        {
+            ipv4Address = "127.0.0.1";
+        }
+        ushort portNum;
+        if (ushort.TryParse(SanitizeAddress(PortText.text), out portNum))
+        {
+            Debug.Log(portNum);
+        }
+        else
+        {
+            portNum = (ushort)7777;
+        }
+
         unityTransport.SetConnectionData(ipv4Address, portNum);
+
+        // unityTransport.SetConnectionData("192.168.1.155", 7777);
     }
 
     IEnumerator GetPublicIP()
@@ -76,5 +97,14 @@ public class NetworkManagerUI : MonoBehaviour
         }
         return "127.0.0.1"; // fallback
     }
+
+    string SanitizeAddress(string input)
+    {
+        // remove zero-width & non-ASCII characters
+        string cleaned = Regex.Replace(input, @"[^\x20-\x7E]", "");
+        cleaned = cleaned.Trim();
+        return cleaned;
+    }
+
 
 }
