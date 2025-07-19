@@ -18182,6 +18182,7 @@ GameObject:
   - component: {fileID: 1653902979}
   - component: {fileID: 1653902981}
   - component: {fileID: 1653902982}
+  - component: {fileID: 1653902983}
   m_Layer: 0
   m_Name: LocalGameManager
   m_TagString: Untagged
@@ -18321,6 +18322,22 @@ MonoBehaviour:
   - {fileID: 1908117016}
   activeInBuildStageOnly:
   - {fileID: 1721026112}
+--- !u!114 &1653902983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653902976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6293c3df8a92312478aeb15f7b1edcb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _songs:
+  - {fileID: 8300000, guid: 7f3d733aac07e5847a0e37d85727dcd9, type: 3}
+  - {fileID: 8300000, guid: 3c079c307e399db4b8bdbd17b9965651, type: 3}
+  initialAudioListener: {fileID: 307577791}
 --- !u!1 &1721026112
 GameObject:
   m_ObjectHideFlags: 0

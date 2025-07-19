@@ -1,0 +1,41 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class #SCRIPTNAME# : MonoBehaviour
+{
+    #region  Singleton implementation
+
+    /// <summary>
+    /// Singleton instance
+    /// </summary>
+    public static #SCRIPTNAME# Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Debug.Log($"Duplicate #SCRIPTNAME# found, removing...");
+            Destroy(gameObject);
+        }
+    }
+
+    #endregion
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}

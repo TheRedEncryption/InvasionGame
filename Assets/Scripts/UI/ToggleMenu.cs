@@ -16,5 +16,6 @@ public class ToggleMenu : MonoBehaviour
     void OnToggleChanged(bool toggleValue)
     {
         buildingPanel.SetActive(toggleValue);
+        LocalMusicManager.Instance.SwitchSong(Song.Temp2);
     }
 }
