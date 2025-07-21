@@ -105,6 +105,4 @@ public class NetworkManagerUI : MonoBehaviour
         cleaned = cleaned.Trim();
         return cleaned;
     }
-
-
 }

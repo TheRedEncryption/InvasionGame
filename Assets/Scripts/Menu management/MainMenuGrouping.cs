@@ -13,9 +13,17 @@ public class MainMenuGrouping : MenuGrouping
     {
 
     }
-    
+
     public override void Hide()
     {
-        Application.Quit();
+        if (LocalMenuManager.IsMainMenu)
+        {
+            //Debug.LogWarning("You have emptied the stack, the application at this point will quit!");
+            //Application.Quit();
+        }
+        else
+        {
+            base.Hide();
+        }
     }
 }

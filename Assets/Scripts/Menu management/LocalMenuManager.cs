@@ -28,6 +28,10 @@ public class LocalMenuManager : MonoBehaviour
         }
     }
 
+    public static bool IsMainMenu => Instance._menuGroupings.Count == 1;
+
+    public static MenuGrouping[] CurrentGroupingsCopy => Instance._menuGroupings.ToArray();
+
     #endregion
 
     /// <summary>
@@ -35,8 +39,6 @@ public class LocalMenuManager : MonoBehaviour
     /// </summary>
     /// <remarks>It is safe to assume this stack will never be empty, as then the program will be closed.</remarks>
     private Stack<MenuGrouping> _menuGroupings = new();
-
-    public bool IsMainMenu => _menuGroupings.Count == 1;
 
     #region Menu Display management
 
@@ -75,14 +77,27 @@ public class LocalMenuManager : MonoBehaviour
     /// Removes the top element in the stack, hiding it's gameobject, and displaying the new top's gameobject.
     /// </summary>
     /// <returns>The original element on top of the stack.</returns>
-    public MenuGrouping Pop()
+    public void Pop()
     {
         MenuGrouping top = _menuGroupings.Pop();
         top.Hide();
 
         _menuGroupings.Peek().Display();
+    }
 
-        return top;
+    /// <summary>
+    /// Pops the entire stack, has the effect of closing the game while calling all respective neccessary checks
+    /// </summary>
+    public void PopAll()
+    {
+        while (Instance._menuGroupings.Count > 1)
+        { Instance.Pop(); }
+
+        MenuGrouping top = _menuGroupings.Pop();
+        top.Hide();
+
+        Debug.LogWarning("You have emptied the stack, the application at this point will quit!");
+        Application.Quit();
     }
 
     #endregion
