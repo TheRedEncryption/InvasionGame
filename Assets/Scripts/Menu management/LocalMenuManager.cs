@@ -68,6 +68,16 @@ public class LocalMenuManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Switches the menu that is currently on top
+    /// </summary>
+    /// <param name="grouping"></param>
+    public void SwitchTop(GameObject grouping)
+    {
+        Pop();
+        Push(grouping);
+    }
+
+    /// <summary>
     /// Gets the gameobject associated with the MenuGrouping at the top of the stack.
     /// </summary>
     /// <returns>The top of the stack's gameobject.</returns>

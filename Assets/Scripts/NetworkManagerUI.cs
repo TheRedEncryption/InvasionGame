@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 public class NetworkManagerUI : MonoBehaviour
 {
-    [SerializeField] private Button serverButton;
+    [SerializeField] private GameObject _grouping;
     [SerializeField] private Button hostButton;
     [SerializeField] private Button clientButton;
 
@@ -28,23 +28,21 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void Awake()
     {
-        serverButton.onClick.AddListener(() =>
-        {
-            SetNetworkAddresses();
-            NetworkManager.Singleton.StartServer();
-            StartCoroutine(GetPublicIP());
-        });
         hostButton.onClick.AddListener(() =>
         {
             SetNetworkAddresses();
             NetworkManager.Singleton.StartHost();
             StartCoroutine(GetPublicIP());
+
+            LocalMenuManager.Instance.Push(_grouping);
         });
         clientButton.onClick.AddListener(() =>
         {
             SetNetworkAddresses();
             Debug.Log($"Attempting connection to {unityTransport.ConnectionData.Address}:{unityTransport.ConnectionData.Port}!");
             NetworkManager.Singleton.StartClient();
+            
+            LocalMenuManager.Instance.Push(_grouping);
         });
     }
 
