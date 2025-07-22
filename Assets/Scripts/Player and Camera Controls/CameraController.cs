@@ -193,7 +193,7 @@ public class CameraController : MonoBehaviour
         float shiftSpeedScale = PlayerInputHandler.Instance.CrouchDown && !PlayerInputHandler.Instance.AttackDown ? 3f : 1f;
 
         // Click and drag or WASD
-        Vector2 inputVector = PlayerInputHandler.Instance.AttackDown ?
+        Vector2 inputVector = (PlayerInputHandler.Instance.AttackDown && PlayerInputHandler.Instance.CrouchDown) ?
             -PlayerInputHandler.Instance.LookInput / 2f : PlayerInputHandler.Instance.MoveInput;
 
         Vector2 newPos = shiftSpeedScale * heightSpeedScale * planeMoveBaseSpeed * Time.deltaTime * inputVector + new Vector2(transform.position.x, transform.position.z);

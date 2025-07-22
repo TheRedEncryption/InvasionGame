@@ -82,7 +82,7 @@ public class ObjectPlacer : MonoBehaviour
 
         Evaluation = Evaluate();
 
-        if (Evaluation && PlayerInputHandler.Instance.AttackTriggered && !EventSystem.current.IsPointerOverGameObject())
+        if (Evaluation && PlayerInputHandler.Instance.AttackTriggered && !PlayerInputHandler.Instance.CrouchDown && !EventSystem.current.IsPointerOverGameObject())
         {
             if (NetworkManager.Singleton.IsConnectedClient)
             {
