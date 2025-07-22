@@ -28,6 +28,12 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void Awake()
     {
+        //serverButton.onClick.AddListener(() =>
+        //{
+        //    SetNetworkAddresses();
+        //    NetworkManager.Singleton.StartServer();
+        //    StartCoroutine(GetPublicIP());
+        //});
         hostButton.onClick.AddListener(() =>
         {
             SetNetworkAddresses();
