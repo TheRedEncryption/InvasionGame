@@ -26,6 +26,7 @@ public class PlayerInputHandler : MonoBehaviour
         "SwitchCameraView"
     };
 
+
     // --- Input references ---
     // Raw data from input detection
     public Vector2 MoveInput { get; private set; }
