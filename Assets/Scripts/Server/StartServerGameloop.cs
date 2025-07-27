@@ -12,7 +12,7 @@ public class StartServerGameloop : MonoBehaviour
         // figure out if server, if not, return immediately
 #if !UNITY_SERVER
         Debug.Log("[StartServerGameloop]: Destroying ServerGameManager!");
-        Destroy(gameObject);
+        //Destroy(gameObject);
         return;
 #else
         uTrans = FindFirstObjectByType<UnityTransport>();
